@@ -177,7 +177,7 @@ export const CHWManagement = () => {
             </Card>
           ))}
 
-          <Card className="rounded-[5px] shadow-[1px_1px_6px_#10193466]">
+          {/* <Card className="rounded-[5px] shadow-[1px_1px_6px_#10193466]">
             <CardContent className="p-6">
               <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base [text-shadow:1px_-1px_4px_#00000040] mb-4">
                 CHW Status Distribution
@@ -191,7 +191,7 @@ export const CHWManagement = () => {
                 />
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
