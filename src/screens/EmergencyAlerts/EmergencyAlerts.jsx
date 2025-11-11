@@ -35,7 +35,7 @@ import {
 const statsData = [
   {
     title: "Total Emergencies",
-    value: "1, 287",
+    value: "1,287",
     change: "+45 this week",
     icon: AlertTriangleIcon,
   },
@@ -47,7 +47,7 @@ const statsData = [
   },
   {
     title: "Resolved cases",
-    value: "1, 287",
+    value: "1,287",
     change: "+45 this week",
     icon: AlertTriangleIcon,
   },
@@ -86,9 +86,17 @@ const incomingAlerts = [
   },
 ];
 
+// ✅ FIX: Add legend items for the map
+const legendItems = [
+  { color: "bg-red-500", label: "Critical" },
+  { color: "bg-orange-500", label: "Urgent" },
+  { color: "bg-yellow-400", label: "Moderate" },
+  { color: "bg-green-500", label: "Available" },
+  // { color: "bg-blue-500", label: "In Transit" },
+];
+
 export const EmergencyAlerts = () => {
   const [emergencies, setEmergencies] = useState([]);
-  const [ambulances, setAmbulances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -125,7 +133,7 @@ export const EmergencyAlerts = () => {
           phone_number: "+250788123456",
           location: "Kimironko / Biryogo",
           maintenance_date: "25 - 09 - 2025",
-          status: "In Transit",
+          status: "Urgent",
         },
       ]);
     } catch (error) {
@@ -152,21 +160,9 @@ export const EmergencyAlerts = () => {
     }
   };
 
-  const getTypeColor = (type) => {
-    switch (type) {
-      case "Critical":
-        return "#FF0000";
-      case "Urgent":
-        return "#FFA500";
-      case "Moderate":
-        return "#FFD700";
-      default:
-        return "#808080";
-    }
-  };
-
   return (
     <div className="flex-1 flex flex-col">
+      {/* Header */}
       <header className="h-[76px] border-b flex items-center justify-between px-8">
         <div className="flex items-center gap-4 flex-1 max-w-[522px]">
           <div className="relative flex-1">
@@ -180,7 +176,6 @@ export const EmergencyAlerts = () => {
             <MenuIcon className="w-4 h-4" />
           </Button>
         </div>
-
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon">
             <BellIcon className="w-5 h-5" />
@@ -188,7 +183,9 @@ export const EmergencyAlerts = () => {
         </div>
       </header>
 
+      {/* Main Content */}
       <div className="flex-1 p-8 overflow-auto">
+        {/* Top Stats */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
@@ -218,6 +215,7 @@ export const EmergencyAlerts = () => {
           </div>
         </div>
 
+        {/* Stat Cards */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           {statsData.map((stat, index) => {
             const IconComponent = stat.icon;
@@ -247,7 +245,9 @@ export const EmergencyAlerts = () => {
           })}
         </div>
 
+        {/* Alerts + Map */}
         <div className="grid grid-cols-2 gap-4 mb-6">
+          {/* Incoming Alerts */}
           <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -285,22 +285,16 @@ export const EmergencyAlerts = () => {
                         </div>
                       </div>
                       <Badge
-                        className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-xs px-2 py-1 ${
-                          alert.type === "Critical"
-                            ? "bg-red-100 text-red-800"
-                            : alert.type === "Urgent"
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
+                        className={`rounded-[3px] font-normal text-xs px-2 py-1 ${getStatusBadgeColor(
+                          alert.type
+                        )}`}
                       >
                         {alert.type}
                       </Badge>
                     </div>
                     <div className="flex items-center text-[#000000a6]">
                       <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div>
-                      <span className="[font-family:'Poppins',Helvetica] font-normal text-xs">
-                        {alert.time}
-                      </span>
+                      <span className="font-normal text-xs">{alert.time}</span>
                     </div>
                   </div>
                 ))}
@@ -308,21 +302,29 @@ export const EmergencyAlerts = () => {
             </CardContent>
           </Card>
 
+          {/* Map Section */}
           <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
             <CardContent className="p-6">
-              <div className="h-[280px] bg-gray-100 rounded-[3px] flex items-center justify-center">
-                <div className="text-center">
-                  <img
-                    src="/image copy.png"
-                    alt="Emergency Map"
-                    className="w-full h-full object-cover rounded-[3px]"
-                  />
-                </div>
+              <img
+                src="/group-1000005762.png"
+                alt="Rwanda Map"
+                className="w-full h-auto mb-4"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                {legendItems.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-[3px] ${item.color}`} />
+                    <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px] text-center">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* Ambulance Table */}
         <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -337,7 +339,7 @@ export const EmergencyAlerts = () => {
                     placeholder="search by name, phone number, or id"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]"
+                    className="pl-10 font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]"
                   />
                 </div>
 
@@ -348,7 +350,7 @@ export const EmergencyAlerts = () => {
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="in-transit">In Transit</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -367,27 +369,13 @@ export const EmergencyAlerts = () => {
                   <TableHead className="w-[50px]">
                     <Checkbox />
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Alert ID
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Caller name
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Phone number
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Location
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Maintenance date
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Status
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Action
-                  </TableHead>
+                  <TableHead>Alert ID</TableHead>
+                  <TableHead>Caller name</TableHead>
+                  <TableHead>Phone number</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Maintenance date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -409,24 +397,14 @@ export const EmergencyAlerts = () => {
                       <TableCell>
                         <Checkbox />
                       </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                        {emergency.alert_id}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                        {emergency.caller_name}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                        {emergency.phone_number}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                        {emergency.location}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                        {emergency.maintenance_date}
-                      </TableCell>
+                      <TableCell>{emergency.alert_id}</TableCell>
+                      <TableCell>{emergency.caller_name}</TableCell>
+                      <TableCell>{emergency.phone_number}</TableCell>
+                      <TableCell>{emergency.location}</TableCell>
+                      <TableCell>{emergency.maintenance_date}</TableCell>
                       <TableCell>
                         <Badge
-                          className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-xs px-3 py-1 ${getStatusBadgeColor(
+                          className={`rounded-[3px] text-xs px-3 py-1 ${getStatusBadgeColor(
                             emergency.status
                           )}`}
                         >
@@ -435,25 +413,13 @@ export const EmergencyAlerts = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <PencilIcon className="w-4 h-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Trash2Icon className="w-4 h-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <EyeIcon className="w-4 h-4" />
                           </Button>
                         </div>
@@ -465,7 +431,7 @@ export const EmergencyAlerts = () => {
             </Table>
 
             <div className="flex items-center justify-between mt-6">
-              <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+              <span className="text-sm text-[#000000a6]">
                 1—10 of {emergencies.length}
               </span>
 
@@ -474,33 +440,22 @@ export const EmergencyAlerts = () => {
                   variant="outline"
                   className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
                 >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    Previous
-                  </span>
+                  Previous
                 </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
-                    1
-                  </span>
+                <Button className="h-auto px-3 py-2 rounded-[3px] bg-[#09111e] text-white">
+                  1
                 </Button>
                 <Button
                   variant="outline"
                   className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
                 >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    2
-                  </span>
+                  2
                 </Button>
                 <Button
                   variant="outline"
                   className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
                 >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    Next
-                  </span>
+                  Next
                 </Button>
               </div>
             </div>
