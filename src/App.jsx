@@ -6,6 +6,7 @@ import { AmbulanceTracker } from "./screens/AmbulanceTracker";
 import { ReportsAnalytics } from "./screens/ReportsAnalytics";
 import { UserManagement } from "./screens/UserManagement";
 import { CHWManagement } from "./screens/CHWManagement";
+import { EmergencyAlerts } from "./screens/EmergencyAlerts";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route path="/reports-analytics" element={<ReportsAnalytics />} />
           <Route path="/user-management" element={<UserManagement />} />
           <Route path="/chw-management" element={<CHWManagement />} />
-          <Route path="/emergency-alerts" element={<Dashboard />} />
+          <Route path="/emergency-alerts" element={<EmergencyAlerts />} />
           <Route path="/appointments" element={<Dashboard />} />
           <Route path="/settings" element={<Dashboard />} />
         </Routes>
