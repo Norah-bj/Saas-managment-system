@@ -33,7 +33,6 @@ import {
   TableRow,
 } from "../../components/Table";
 import { fetchCHWs } from "../../api/chwService";
-import { CHWPieChart } from "../../components/CHWPieChart";
 
 const statsData = [
   {
