@@ -58,6 +58,18 @@ const statsData = [
   },
 ];
 
+const userData = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "johndoe@example.com",
+    phone: "+1 (123) 456-7890",
+    status: "Active",
+    location: "New York",
+  },
+  
+]
+
 export const CHWManagement = () => {
   const [chwData, setChwData] = useState([]);
   const [loading, setLoading] = useState(true);

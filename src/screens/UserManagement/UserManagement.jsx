@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   BellIcon,
   DownloadIcon,
@@ -7,13 +8,20 @@ import {
   PlusIcon,
   SearchIcon,
   Trash2Icon,
+  RotateCcwIcon,
 } from "lucide-react";
-import React from "react";
 import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
 import { Card, CardContent } from "../../components/Card";
 import { Checkbox } from "../../components/Checkbox";
 import { Input } from "../../components/Input";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "../../components/Select";
 import {
   Table,
   TableBody,
@@ -26,17 +34,17 @@ import {
 const statsData = [
   {
     title: "Total registered mothers",
-    value: "1, 287",
+    value: "1,287",
     change: "+45 this week",
   },
   {
     title: "Pregnant mothers",
-    value: "1, 287",
+    value: "1,287",
     change: "+45 this week",
   },
   {
     title: "Total children",
-    value: "1, 287",
+    value: "1,287",
     change: "+45 this week",
   },
   {
@@ -56,50 +64,56 @@ const userData = [
     healthStatus: "CLEAN",
   },
   {
-    userId: "AME-100315",
-    fullName: "Kabera John",
-    nationalId: "+250733333333",
-    cell: "Kabuye",
-    insurance: "Mutuelle",
-    healthStatus: "CLEAN",
-  },
-  {
-    userId: "AME-100315",
-    fullName: "Kabera John",
-    nationalId: "+250733333333",
-    cell: "Kabuye",
-    insurance: "Mutuelle",
-    healthStatus: "CLEAN",
-  },
-  {
     userId: "AME-100316",
-    fullName: "Kabera John",
-    nationalId: "+250733333333",
-    cell: "Kabuye",
+    fullName: "Mukamana Alice",
+    nationalId: "+250722222222",
+    cell: "Gisozi",
+    insurance: "RSSB",
+    healthStatus: "SICK",
+  },
+  {
+    userId: "AME-100317",
+    fullName: "Niyonsenga Peter",
+    nationalId: "+250711111111",
+    cell: "Nyamirambo",
     insurance: "Mutuelle",
     healthStatus: "CLEAN",
   },
   {
-    userId: "AME-100316",
-    fullName: "Kabera John",
-    nationalId: "+250733333333",
-    cell: "Kabuye",
-    insurance: "Mutuelle",
-    healthStatus: "CLEAN",
-  },
-  {
-    userId: "AME-100315",
-    fullName: "Kabera John",
-    nationalId: "+250733333333",
-    cell: "Kabuye",
-    insurance: "Mutuelle",
-    healthStatus: "CLEAN",
+    userId: "AME-100318",
+    fullName: "Uwase Diane",
+    nationalId: "+250700000000",
+    cell: "Kicukiro",
+    insurance: "Private",
+    healthStatus: "SICK",
   },
 ];
 
 export const UserManagement = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState("all");
+
+  const filteredUsers = userData.filter((user) => {
+    const matchesSearch =
+      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.nationalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userId.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      user.healthStatus.toLowerCase() === statusFilter.toLowerCase();
+
+    const matchesLocation =
+      locationFilter === "all" ||
+      user.cell.toLowerCase() === locationFilter.toLowerCase();
+
+    return matchesSearch && matchesStatus && matchesLocation;
+  });
+
   return (
     <div className="flex-1 flex flex-col">
+      {/* Header */}
       <header className="h-[76px] border-b flex items-center justify-between px-8">
         <div className="flex items-center gap-4 flex-1 max-w-[522px]">
           <div className="relative flex-1">
@@ -121,7 +135,9 @@ export const UserManagement = () => {
         </div>
       </header>
 
+      {/* Main Section */}
       <div className="flex-1 p-8 overflow-auto">
+        {/* Top title section */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
@@ -139,18 +155,19 @@ export const UserManagement = () => {
             >
               <DownloadIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                Export csv
+                Export CSV
               </span>
             </Button>
             <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
               <PlusIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
-                add appointment
+                Add appointment
               </span>
             </Button>
           </div>
         </div>
 
+        {/* Stats Section */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           {statsData.map((stat, index) => (
             <Card
@@ -172,133 +189,126 @@ export const UserManagement = () => {
           ))}
         </div>
 
+        {/* Table Section */}
         <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
           <CardContent className="p-6">
+            {/* Filters */}
             <div className="flex items-center justify-between mb-6">
-              <div className="relative flex-1 max-w-[300px]">
+              <div className="relative flex-1 max-w-[350px]">
                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="search by name, data, status, purpose etc..."
+                  placeholder="search by name, phone number, or id"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]"
                 />
               </div>
 
               <div className="flex items-center gap-3">
+                {/* Status Filter */}
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[150px] h-[38px] rounded-[3px] border border-[#0000004c]">
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="clean">Clean</SelectItem>
+                    <SelectItem value="sick">Sick</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Location Filter */}
+                <Select value={locationFilter} onValueChange={setLocationFilter}>
+                  <SelectTrigger className="w-[150px] h-[38px] rounded-[3px] border border-[#0000004c]">
+                    <SelectValue placeholder="All locations" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All locations</SelectItem>
+                    <SelectItem value="Kabuye">Kabuye</SelectItem>
+                    <SelectItem value="Gisozi">Gisozi</SelectItem>
+                    <SelectItem value="Kicukiro">Kicukiro</SelectItem>
+                    <SelectItem value="Nyamirambo">Nyamirambo</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Export & Refresh */}
                 <Button
                   variant="outline"
-                  className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white"
+                  className="h-[38px] px-4 rounded-[3px] border border-[#0000004c]"
                 >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-xs">
-                    All insurance
+                  <DownloadIcon className="w-4 h-4 mr-2" />
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-xs">
+                    Export
                   </span>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-xs">
-                    All cells
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-xs">
-                    Health status
-                  </span>
+
+                <Button variant="ghost" size="icon" className="h-[38px] w-[38px]">
+                  <RotateCcwIcon className="w-[15px] h-[15px]" />
                 </Button>
               </div>
             </div>
 
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">
-                    <Checkbox />
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Userid
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Full name
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    National ID
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Cell
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Insurance
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Health status
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
-                    Action
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {userData.map((user, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
+            {/* Data Table */}
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">
                       <Checkbox />
-                    </TableCell>
-                    <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                      {user.userId}
-                    </TableCell>
-                    <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                      {user.fullName}
-                    </TableCell>
-                    <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                      {user.nationalId}
-                    </TableCell>
-                    <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                      {user.cell}
-                    </TableCell>
-                    <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
-                      {user.insurance}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className="bg-[#d7f7e7] text-[#006633] rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-xs px-3 py-1"
-                      >
-                        {user.healthStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                        >
-                          <PencilIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                        >
-                          <EyeIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                        >
-                          <Trash2Icon className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead>Userid</TableHead>
+                    <TableHead>Full name</TableHead>
+                    <TableHead>National ID</TableHead>
+                    <TableHead>Cell</TableHead>
+                    <TableHead>Insurance</TableHead>
+                    <TableHead>Health status</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
 
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow key={user.userId}>
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>{user.userId}</TableCell>
+                      <TableCell>{user.fullName}</TableCell>
+                      <TableCell>{user.nationalId}</TableCell>
+                      <TableCell>{user.cell}</TableCell>
+                      <TableCell>{user.insurance}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="secondary"
+                          className={`${
+                            user.healthStatus === "SICK"
+                              ? "bg-[#fde7e7] text-[#b00000]"
+                              : "bg-[#d7f7e7] text-[#006633]"
+                          } rounded-[3px] font-normal text-xs px-3 py-1`}
+                        >
+                          {user.healthStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <PencilIcon className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <EyeIcon className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Trash2Icon className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination */}
             <div className="flex items-center justify-between mt-6">
               <Button
                 variant="outline"
