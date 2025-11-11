@@ -33,6 +33,7 @@ import {
   TableRow,
 } from "../../components/Table";
 import { fetchCHWs } from "../../api/chwService";
+import { CHWPieChart } from "../../components/CHWPieChart";
 
 const statsData = [
   {
@@ -144,8 +145,8 @@ export const CHWManagement = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          {statsData.map((stat, index) => (
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {statsData.slice(0, 3).map((stat, index) => (
             <Card
               key={index}
               className="rounded-[5px] shadow-[1px_1px_6px_#10193466]"
@@ -163,6 +164,22 @@ export const CHWManagement = () => {
               </CardContent>
             </Card>
           ))}
+
+          <Card className="rounded-[5px] shadow-[1px_1px_6px_#10193466]">
+            <CardContent className="p-6">
+              <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base [text-shadow:1px_-1px_4px_#00000040] mb-4">
+                CHW Status Distribution
+              </div>
+              <div className="h-[250px]">
+                <CHWPieChart
+                  data={[
+                    { name: "Active CHWs", value: chwData.filter((c) => c.status === "Active").length, color: "#0066FF" },
+                    { name: "Inactive CHWs", value: chwData.filter((c) => c.status === "Inactive").length, color: "#001F4D" },
+                  ]}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
