@@ -1,9 +1,8 @@
 import {
   BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   DownloadIcon,
   EyeIcon,
+  FilterIcon,
   MenuIcon,
   PencilIcon,
   PlusIcon,
@@ -11,7 +10,7 @@ import {
   SearchIcon,
   Trash2Icon,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
 import { Card, CardContent } from "../../components/Card";
@@ -32,182 +31,81 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/Table";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const statsData = [
   {
-    title: "Total appointments",
-    value: "1,287",
+    title: "Total ambulances",
+    value: "1, 287",
     change: "+45 this week",
+    icon: "/vector-4.svg",
   },
   {
-    title: "Upcoming (Next 7days)",
-    value: "1,287",
+    title: "Ambulances en route",
+    value: "1, 287",
     change: "+45 this week",
+    icon: "/vector-4.svg",
   },
   {
-    title: "Completed appointments",
-    value: "1,287",
+    title: "Available ambulances",
+    value: "1, 287",
     change: "+45 this week",
+    icon: "/vector-4.svg",
   },
   {
-    title: "Missed appointments",
+    title: "Busy ambulances",
     value: "89",
     change: "+12 from last month",
+    icon: "/vector-4.svg",
   },
 ];
 
-const appointmentTypes = [
-  { name: "Antenatal", color: "#0066FF" },
-  { name: "Postnatal", color: "#FF1493" },
-  { name: "Vaccination", color: "#0066FF" },
-  { name: "Follow-up", color: "#FFA500" },
+const tableData = [
+  {
+    plateNumber: "AMB-00835",
+    driver: "Kabera John",
+    currentLocation: "Kamatamu Hospital",
+    vehicleType: "Kimironko / Biryogo",
+    maintenanceDate: "25 - 09 -2025",
+    status: "Online",
+  },
+  {
+    plateNumber: "AMB-00836",
+    driver: "Niyonsenga Peter",
+    currentLocation: "Kigali CHUK",
+    vehicleType: "Kimironko / Biryogo",
+    maintenanceDate: "01 - 10 -2025",
+    status: "Online",
+  },
 ];
 
-export const Appointments = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 10, 12)); // Updated to November 2025 context
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
+const chartData = [
+  { name: "Available", value: 60 },
+  { name: "Maintenance", value: 25 },
+  { name: "En route", value: 10 },
+  { name: "Offline", value: 5 },
+];
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+const COLORS = ["#001240", "#a4b0ff", "#4d8dff", "#d1dfff"];
 
-  const fetchAppointments = async () => {
-    try {
-      setAppointments([
-        {
-          id: 1,
-          patient_name: "Jane Doe",
-          phone_number: "+250788111111",
-          appointment_date: "2025-11-09",
-          appointment_time: "10:00",
-          type: "Vaccination",
-          chw_name: "UWASE Cloudine",
-          status: "Scheduled",
-        },
-        {
-          id: 2,
-          patient_name: "Mary Smith",
-          phone_number: "+250788222222",
-          appointment_date: "2025-11-14",
-          appointment_time: "14:30",
-          type: "Antenatal",
-          chw_name: "John Kalisa",
-          status: "Scheduled",
-        },
-        {
-          id: 3,
-          patient_name: "Sarah Wilson",
-          phone_number: "+250788333333",
-          appointment_date: "2025-11-20",
-          appointment_time: "09:00",
-          type: "Postnatal",
-          chw_name: "UWASE Cloudine",
-          status: "Completed",
-        },
-        {
-          id: 4,
-          patient_name: "Alice Johnson",
-          phone_number: "+250788444444",
-          appointment_date: "2025-11-21",
-          appointment_time: "11:00",
-          type: "Follow-up",
-          chw_name: "John Kalisa",
-          status: "Missed",
-        },
-        {
-          id: 5,
-          patient_name: "Elizabeth Brown",
-          phone_number: "+250788555555",
-          appointment_date: "2025-11-25",
-          appointment_time: "15:00",
-          type: "Vaccination",
-          chw_name: "UWASE Cloudine",
-          status: "Scheduled",
-        },
-      ]);
-    } catch (error) {
-      console.error("Error fetching appointments:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDaysInMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };
-
-  const getFirstDayOfMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  };
-
-  const getAppointmentsForDay = (day) => {
-    const dateStr = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return appointments.filter((apt) => apt.appointment_date === dateStr);
-  };
-
-  const getTypeColor = (type) => {
-    const typeObj = appointmentTypes.find((t) => t.name === type);
-    return typeObj ? typeObj.color : "#ccc";
-  };
-
-  const getStatusBadgeColor = (status) => {
-    switch (status) {
-      case "Scheduled":
-        return "bg-blue-100 text-blue-800";
-      case "Completed":
-        return "bg-green-100 text-green-800";
-      case "Missed":
-        return "bg-red-100 text-red-800";
-      case "Cancelled":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const previousMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-    );
-  };
-
-  const nextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-    );
-  };
-
-  const monthName = currentDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const daysInMonth = getDaysInMonth(currentDate);
-  const firstDay = getFirstDayOfMonth(currentDate);
-  const days = [];
-
-  for (let i = 0; i < firstDay; i++) {
-    days.push(null);
-  }
-
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(i);
-  }
-
+export const AmbulanceTracker = () => {
   return (
     <div className="flex-1 flex flex-col">
+      {/* Header */}
       <header className="h-[76px] border-b flex items-center justify-between px-8">
-        <div className="flex items-center gap-3 flex-1 max-w-[522px]"> {/* Reduced gap from 4 to 3 */}
+        <div className="flex items-center gap-4 flex-1 max-w-[522px]">
           <div className="relative flex-1">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="search anything..."
-              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[3px]"
+              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[5px]"
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
@@ -215,57 +113,58 @@ export const Appointments = () => {
           </Button>
         </div>
 
-        <div className="flex items-center gap-3"> {/* Reduced gap from 4 to 3 */}
+        <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon">
             <BellIcon className="w-5 h-5" />
           </Button>
         </div>
       </header>
 
-      <div className="flex-1 p-6 overflow-auto"> {/* Reduced padding from p-8 to p-6 */}
-        <div className="flex items-center justify-between mb-4"> {/* Reduced mb-6 to mb-4 */}
-          <div>
-            <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg mb-1"> {/* Reduced text-xl to text-lg */}
-              Appointments
-            </h1>
-            <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs"> {/* Reduced text-sm to text-xs */}
-              View all appointments
-            </p>
-          </div>
+      {/* Body */}
+      <div className="flex-1 p-8 overflow-auto">
+        {/* Title + Buttons */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
+            Ambulance tracker
+          </h1>
 
-          <div className="flex items-center gap-2"> {/* Reduced gap from 3 to 2 */}
+          <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              className="h-auto px-3 py-1.5 rounded-[3px] border border-[#0000004c]" 
+              className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c]"
             >
-              <DownloadIcon className="w-4 h-4 mr-1.5" /> {/* Reduced mr-2 to mr-1.5 */}
-              <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-xs"> {/* Reduced text-sm to text-xs */}
+              <DownloadIcon className="w-4 h-4 mr-2" />
+              <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
                 Export csv
               </span>
             </Button>
-            <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e]"> {/* Reduced py-2 to py-1.5, px-4 to px-3 */}
-              <PlusIcon className="w-4 h-4 mr-1.5" /> {/* Reduced mr-2 to mr-1.5 */}
-              <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-xs"> {/* Reduced text-sm to text-xs */}
-                Add appointment
+            <Button className="h-auto px-4 py-2 bg-[#001240] rounded-sm">
+              <PlusIcon className="w-4 h-4 mr-2" />
+              <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
+                Assign cases
               </span>
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 mb-4"> {/* Reduced gap-4 to gap-3, mb-6 to mb-4 */}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
           {statsData.map((stat, index) => (
             <Card
               key={index}
               className="rounded-[5px] shadow-[1px_1px_6px_#10193466]"
             >
-              <CardContent className="p-4"> {/* Reduced p-6 to p-4 */}
-                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm [text-shadow:1px_-1px_4px_#00000040] mb-3"> {/* Reduced text-base to text-sm, mb-4 to mb-3 */}
-                  {stat.title}
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base">
+                    {stat.title}
+                  </div>
+                  <img src={stat.icon} alt="" className="w-[22px] h-[35px]" />
                 </div>
-                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl [text-shadow:1px_-1px_4px_#00000040] mb-1.5"> {/* Reduced text-2xl to text-xl, mb-2 to mb-1.5 */}
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-2xl mb-2">
                   {stat.value}
                 </div>
-                <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[12px] [text-shadow:1px_-1px_4px_#00000040]"> {/* Reduced text-[13px] to text-[12px] */}
+                <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[13px]">
                   {stat.change}
                 </div>
               </CardContent>
@@ -273,335 +172,171 @@ export const Appointments = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-4"> {/* Reduced gap-6 to gap-4, mb-6 to mb-4 */}
-          <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040] col-span-2">
-            <CardContent className="p-4"> {/* Reduced p-6 to p-4 */}
-              <div className="mb-4"> {/* Reduced mb-6 to mb-4 */}
-                <div className="flex items-center justify-between mb-3"> {/* Reduced mb-4 to mb-3 */}
-                  <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm"> {/* Reduced text-base to text-sm */}
-                    Calendar View
-                  </h3>
-                  <div className="flex items-center gap-1.5"> {/* Reduced gap-2 to gap-1.5 */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={previousMonth}
-                      className="h-7 w-7"
-                    >
-                      <ChevronLeftIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                    </Button>
-                    <span className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xs min-w-[90px] text-center"> {/* Reduced text-sm to text-xs, min-w-[100px] to [90px] */}
-                      {monthName}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={nextMonth}
-                      className="h-7 w-7"
-                    >
-                      <ChevronRightIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 mb-4"> {/* Reduced gap-4 to gap-3, mb-6 to mb-4 */}
-                  {appointmentTypes.map((type) => (
-                    <div key={type.name} className="flex items-center gap-1.5"> {/* Reduced gap-2 to gap-1.5 */}
-                      <div
-                        className="w-2.5 h-2.5 rounded" 
-                        style={{ backgroundColor: type.color }}
-                      ></div>
-                      <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px]"> {/* Reduced text-xs to text-[11px] */}
-                        {type.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-7 gap-1.5 mb-1.5"> {/* Reduced gap-2 to gap-1.5, mb-2 to mb-1.5 */}
-                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                    (day) => (
-                      <div
-                        key={day}
-                        className="text-center [font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px] py-1.5" 
-                      >
-                        {day}
-                      </div>
-                    )
-                  )}
-                </div>
-
-                <div className="grid grid-cols-7 gap-1.5"> {/* Reduced gap-2 to gap-1.5 */}
-                  {days.map((day, index) => (
-                    <div
-                      key={index}
-                      className={`p-2 rounded-[3px] border border-[#0000004c] min-h-[70px] ${ /* Reduced p-3 to p-2, min-h-[80px] to [70px] */
-                        day ? "bg-white" : "bg-gray-50"
-                      }`}
-                    >
-                      {day && (
-                        <>
-                          <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px] mb-1.5"> {/* Reduced text-sm to text-[11px], mb-2 to mb-1.5 */}
-                            {day}
-                          </div>
-                          <div className="space-y-0.5"> {/* Reduced space-y-1 to space-y-0.5 */}
-                            {getAppointmentsForDay(day).map((apt, idx) => (
-                              <div
-                                key={idx}
-                                className="w-1.5 h-1.5 rounded-full" 
-                                style={{
-                                  backgroundColor: getTypeColor(apt.type),
-                                }}
-                              ></div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+        {/* Map + Pie Chart */}
+        <div className="grid grid-cols-[1fr_400px] gap-6 mb-6">
+          {/* Map Card */}
+          <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
+            <CardContent className="p-6">
+              <img
+                src="/group-1000005762.png"
+                alt="Rwanda Map"
+                className="w-full h-auto"
+              />
             </CardContent>
           </Card>
 
+          {/* Pie Chart Card */}
           <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
-            <CardContent className="p-4"> {/* Reduced p-6 to p-4 */}
-              <div className="mb-3"> {/* Reduced mb-4 to mb-3 */}
-                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm mb-3"> {/* Reduced text-base to text-sm, mb-4 to mb-3 */}
-                  Filters
-                </h3>
-
-                <div className="space-y-3"> {/* Reduced space-y-4 to space-y-3 */}
-                  <div>
-                    <label className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px] block mb-1.5"> {/* Reduced text-sm to text-[11px], mb-2 to mb-1.5 */}
-                      Appointment Type
-                    </label>
-                    <Select value={filterType} onValueChange={setFilterType}>
-                      <SelectTrigger className="w-full rounded-[3px] border border-[#0000004c]">
-                        <SelectValue placeholder="All types" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All types</SelectItem>
-                        {appointmentTypes.map((type) => (
-                          <SelectItem key={type.name} value={type.name}>
-                            {type.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-[3px] border border-[#0000004c]"
-                  >
-                    <RotateCcwIcon className="w-3.5 h-3.5 mr-1.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5, mr-2 to mr-1.5 */}
-                    Reset Filters
-                  </Button>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base">
+                  Ambulance availability
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-auto px-3 py-1 bg-[#09111e] text-white rounded-sm"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-normal text-xs">
+                    All time
+                  </span>
+                </Button>
+              </div>
+
+              <div className="w-full h-[250px] mb-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      dataKey="value"
+                      nameKey="name"
+                      label={({ name, percent }) =>
+                        `${name}: ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend
+                      layout="horizontal"
+                      align="center"
+                      verticalAlign="bottom"
+                      iconType="circle"
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
-          <CardContent className="p-4"> {/* Reduced p-6 to p-4 */}
-            <div className="flex items-center justify-between mb-4"> {/* Reduced mb-6 to mb-4 */}
-              <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm"> {/* Reduced text-base to text-sm */}
-                Appointments List
-              </h3>
+        {/* Table Filters */}
+        <div className="mb-6 flex items-center gap-3">
+          <div className="relative flex-1 max-w-[400px]">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="search by name, phone number, or id"
+              className="pl-10 h-[40px] rounded-[7px] border border-[#0000004c]"
+            />
+          </div>
 
-              <div className="flex items-center gap-2"> {/* Reduced gap-3 to gap-2 */}
-                <div className="relative flex-1 max-w-[200px]"> {/* Reduced max-w-[250px] to [200px] */}
-                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                  <Input
-                    placeholder="search by name, phone, or type"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[36px] rounded-[3px]" 
-                  />
-                </div>
+          <Select>
+            <SelectTrigger className="w-[150px] h-[40px] rounded-[7px] border border-[#0000004c]">
+              <SelectValue placeholder="status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="online">Online</SelectItem>
+              <SelectItem value="offline">Offline</SelectItem>
+            </SelectContent>
+          </Select>
 
-                <Select value={filterType} onValueChange={setFilterType}>
-                  <SelectTrigger className="w-[120px] h-[36px] rounded-[3px] border border-[#0000004c]"> {/* Reduced w-[150px] to [120px], h-[38px] to [36px] */}
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All types</SelectItem>
-                    {appointmentTypes.map((type) => (
-                      <SelectItem key={type.name} value={type.name}>
-                        {type.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <Select>
+            <SelectTrigger className="w-[150px] h-[40px] rounded-[7px] border border-[#0000004c]">
+              <SelectValue placeholder="All locations" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All locations</SelectItem>
+            </SelectContent>
+          </Select>
 
-                <Button
-                  variant="outline"
-                  className="h-[36px] px-3 rounded-[3px] border border-[#0000004c]" 
-                >
-                  <RotateCcwIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                </Button>
-              </div>
-            </div>
+          <Select>
+            <SelectTrigger className="w-[150px] h-[40px] rounded-[3px] border border-[#0000004c]">
+              <SelectValue placeholder="vehicle type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
+            </SelectContent>
+          </Select>
 
+          <Button variant="ghost" size="icon" className="h-[40px] w-[40px]">
+            <FilterIcon className="w-6 h-6" />
+          </Button>
+
+          <Button variant="ghost" size="icon" className="h-[40px] w-[40px]">
+            <RotateCcwIcon className="w-[15px] h-[15px]" />
+          </Button>
+        </div>
+
+        {/* Data Table */}
+        <Card className="rounded-[5px]">
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="border-b">
                   <TableHead className="w-[50px]">
                     <Checkbox />
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Patient Name
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Phone Number
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Appointment Date
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Time
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Type
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    CHW Name
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Status
-                  </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Action
-                  </TableHead>
+                  <TableHead>Amb Plate number</TableHead>
+                  <TableHead>Driver</TableHead>
+                  <TableHead>Current Location</TableHead>
+                  <TableHead>Vehicle type</TableHead>
+                  <TableHead>Maintenance date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="text-center py-6"> {/* Reduced py-8 to py-6 */}
-                      Loading...
+                {tableData.map((row, index) => (
+                  <TableRow key={index} className="border-b">
+                    <TableCell>
+                      <Checkbox />
+                    </TableCell>
+                    <TableCell>{row.plateNumber}</TableCell>
+                    <TableCell>{row.driver}</TableCell>
+                    <TableCell>{row.currentLocation}</TableCell>
+                    <TableCell>{row.vehicleType}</TableCell>
+                    <TableCell>{row.maintenanceDate}</TableCell>
+                    <TableCell>
+                      <Badge className="bg-[#05c16833] text-[#14c973] border-[0.6px] border-[#05c16880]">
+                        <div className="w-1 h-1 bg-[#05c168] rounded-full mr-1" />
+                        {row.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" className="p-1">
+                          <PencilIcon className="w-3 h-3" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="p-1">
+                          <Trash2Icon className="w-[13px] h-[13px]" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="p-1">
+                          <EyeIcon className="w-[13px] h-[9px]" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : appointments.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="text-center py-6"> {/* Reduced py-8 to py-6 */}
-                      No appointments found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  appointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
-                      <TableCell>
-                        <Checkbox />
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                        {appointment.patient_name}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                        {appointment.phone_number}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                        {appointment.appointment_date}
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                        {appointment.appointment_time}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className="rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-[10px] px-1.5 py-0.5" 
-                          style={{
-                            backgroundColor: getTypeColor(appointment.type),
-                            color: "white",
-                          }}
-                        >
-                          {appointment.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                        {appointment.chw_name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-[10px] px-2 py-0.5 ${getStatusBadgeColor( /* Reduced text-xs to text-[10px], px-3 to px-2, py-1 to py-0.5 */
-                            appointment.status
-                          )}`}
-                        >
-                          {appointment.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1"> {/* Reduced gap-2 to gap-1 */}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7" 
-                          >
-                            <PencilIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7" 
-                          >
-                            <Trash2Icon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                          >
-                            <EyeIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                ))}
               </TableBody>
             </Table>
-
-            <div className="flex items-center justify-between mt-4"> {/* Reduced mt-6 to mt-4 */}
-              <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                1—10 of {appointments.length}
-              </span>
-
-              <div className="flex items-center gap-1.5"> {/* Reduced gap-2 to gap-1.5 */}
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Previous
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    1
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    2
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Next
-                  </span>
-                </Button>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
