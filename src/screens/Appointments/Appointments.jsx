@@ -7,9 +7,11 @@ import {
   MenuIcon,
   PencilIcon,
   PlusIcon,
+  Power,
   RotateCcwIcon,
   SearchIcon,
   Trash2Icon,
+  X,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Badge } from "../../components/Badge";
@@ -69,6 +71,19 @@ export const Appointments = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    patient_name: "",
+    phone_number: "",
+    appointment_date: "",
+    appointment_time: "",
+    type: "",
+    chw_name: "",
+    status: "",
+  });
 
   useEffect(() => {
     fetchAppointments();
@@ -180,6 +195,76 @@ export const Appointments = () => {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
     );
+  };
+
+  const handleViewDetails = (appointment) => {
+    setSelectedAppointment(appointment);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedAppointment(null);
+  };
+
+  const handleEditAppointment = (appointment) => {
+    setSelectedAppointment(appointment);
+    setEditFormData({
+      patient_name: appointment.patient_name || "",
+      phone_number: appointment.phone_number || "",
+      appointment_date: appointment.appointment_date || "",
+      appointment_time: appointment.appointment_time || "",
+      type: appointment.type || "",
+      chw_name: appointment.chw_name || "",
+      status: appointment.status || "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedAppointment(null);
+    setEditFormData({
+      patient_name: "",
+      phone_number: "",
+      appointment_date: "",
+      appointment_time: "",
+      type: "",
+      chw_name: "",
+      status: "",
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    // TODO: Implement API call to update appointment
+    console.log("Updating appointment:", editFormData);
+    handleCloseEditModal();
+  };
+
+  const handleDeleteAppointment = (appointment) => {
+    setSelectedAppointment(appointment);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedAppointment(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedAppointment) {
+      // TODO: Implement API call to delete appointment
+      console.log("Deleting appointment:", selectedAppointment);
+      handleCloseDeleteModal();
+    }
   };
 
   const monthName = currentDate.toLocaleString("default", {
@@ -537,6 +622,7 @@ export const Appointments = () => {
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
+                            onClick={() => handleEditAppointment(appointment)}
                           >
                             <PencilIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
                           </Button>
@@ -544,6 +630,7 @@ export const Appointments = () => {
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
+                            onClick={() => handleDeleteAppointment(appointment)}
                           >
                             <Trash2Icon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
                           </Button>
@@ -551,6 +638,7 @@ export const Appointments = () => {
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
+                            onClick={() => handleViewDetails(appointment)}
                           >
                             <EyeIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
                           </Button>
@@ -605,6 +693,318 @@ export const Appointments = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* View Details Modal */}
+      {isModalOpen && selectedAppointment && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[600px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                <span className="text-xl font-semibold text-gray-600">
+                  {selectedAppointment.patient_name?.charAt(0).toUpperCase() || "?"}
+                </span>
+              </div>
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg">
+                  {selectedAppointment.patient_name || "N/A"}
+                </h3>
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                  Appointment Details
+                </p>
+              </div>
+            </div>
+            <div>
+              <h4 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                Appointment Information
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Patient Name
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAppointment.patient_name || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Phone Number
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAppointment.phone_number || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Appointment Date
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAppointment.appointment_date || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Time
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAppointment.appointment_time || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Type
+                  </p>
+                  <Badge
+                    className="rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-[10px] px-1.5 py-0.5"
+                    style={{
+                      backgroundColor: getTypeColor(selectedAppointment.type),
+                      color: "white",
+                    }}
+                  >
+                    {selectedAppointment.type || "N/A"}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    CHW Name
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAppointment.chw_name || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Status
+                  </p>
+                  <Badge className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-[10px] px-2 py-0.5 ${getStatusBadgeColor(selectedAppointment.status)}`}>
+                    {selectedAppointment.status || "N/A"}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseEditModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Edit Appointment
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Update appointment information
+              </p>
+            </div>
+            <form onSubmit={handleSubmitEdit} className="space-y-6">
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Appointment Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Patient Name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter patient name"
+                      value={editFormData.patient_name}
+                      onChange={(e) => handleInputChange("patient_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Phone Number<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder="+250XXXXXXXXX"
+                      value={editFormData.phone_number}
+                      onChange={(e) => handleInputChange("phone_number", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Appointment Date<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="date"
+                      value={editFormData.appointment_date}
+                      onChange={(e) => handleInputChange("appointment_date", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Time<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="time"
+                      value={editFormData.appointment_time}
+                      onChange={(e) => handleInputChange("appointment_time", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Type<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.type} 
+                      onValueChange={(value) => handleInputChange("type", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue placeholder="select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {appointmentTypes.map((type) => (
+                          <SelectItem key={type.name} value={type.name}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      CHW Name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter CHW name"
+                      value={editFormData.chw_name}
+                      onChange={(e) => handleInputChange("chw_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Status<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.status} 
+                      onValueChange={(value) => handleInputChange("status", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue placeholder="select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Scheduled">Scheduled</SelectItem>
+                        <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Missed">Missed</SelectItem>
+                        <SelectItem value="Cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseEditModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Cancel</span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Update Appointment</span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && selectedAppointment && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseDeleteModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[500px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseDeleteModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <Power className="w-5 h-5 text-gray-600" />
+              </div>
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
+                Delete Appointment
+              </h2>
+            </div>
+            <div className="mb-6">
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm leading-relaxed">
+                Are you sure you want to delete this appointment? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Confirm</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDeleteModal}
+                className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#000000] hover:bg-gray-50"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Cancel</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

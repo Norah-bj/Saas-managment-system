@@ -7,9 +7,11 @@ import {
   MessageSquareIcon,
   PencilIcon,
   PlusIcon,
+  Power,
   RotateCcwIcon,
   SearchIcon,
   Trash2Icon,
+  X,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Badge } from "../../components/Badge";
@@ -75,6 +77,24 @@ export const CHWManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
+  const [selectedCHW, setSelectedCHW] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    full_name: "",
+    email: "",
+    national_id: "",
+    phone_number: "",
+    gender: "",
+    district: "",
+    sector: "",
+    cell: "",
+    village: "",
+    role_type: "",
+    employment_type: "",
+    start_date: "",
+  });
 
   useEffect(() => {
     loadCHWs();
@@ -102,6 +122,111 @@ export const CHWManagement = () => {
 
     return matchesSearch && matchesStatus && matchesLocation;
   });
+
+  const handleViewDetails = (chw) => {
+    setSelectedCHW(chw);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCHW(null);
+  };
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    // If date is already in YYYY-MM-DD format, return as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    // Try to parse common date formats and convert to YYYY-MM-DD
+    try {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+    } catch (e) {
+      // If parsing fails, return empty string
+    }
+    return "";
+  };
+
+  const handleEditCHW = (chw) => {
+    setSelectedCHW(chw);
+    // Pre-populate form with CHW data
+    const startDate = chw.start_date || chw.date_joined || "";
+    setEditFormData({
+      full_name: chw.full_name || "",
+      email: chw.email || "",
+      national_id: chw.national_id || chw.nationalId || "",
+      phone_number: chw.phone_number || "",
+      gender: chw.gender || "",
+      district: chw.district || "",
+      sector: chw.sector || "",
+      cell: chw.cell || "",
+      village: chw.village || "",
+      role_type: chw.role_type || chw.roleType || "",
+      employment_type: chw.employment_type || chw.employmentType || "",
+      start_date: formatDateForInput(startDate),
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedCHW(null);
+    setEditFormData({
+      full_name: "",
+      email: "",
+      national_id: "",
+      phone_number: "",
+      gender: "",
+      district: "",
+      sector: "",
+      cell: "",
+      village: "",
+      role_type: "",
+      employment_type: "",
+      start_date: "",
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    // TODO: Implement API call to update CHW
+    console.log("Updating CHW:", editFormData);
+    // After successful update, refresh the list and close modal
+    await loadCHWs();
+    handleCloseEditModal();
+  };
+
+  const handleDeleteCHW = (chw) => {
+    setSelectedCHW(chw);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedCHW(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedCHW) {
+      // TODO: Implement API call to deactivate/delete CHW
+      console.log("Deactivating CHW:", selectedCHW);
+      // After successful deactivation, refresh the list and close modal
+      await loadCHWs();
+      handleCloseDeleteModal();
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -350,13 +475,28 @@ export const CHWManagement = () => {
                       </TableCell>
                       <TableCell className="px-2 py-1">
                         <div className="flex items-center gap-1">
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6"
+                            onClick={() => handleEditCHW(chw)}
+                          >
                             <PencilIcon className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6"
+                            onClick={() => handleDeleteCHW(chw)}
+                          >
                             <Trash2Icon className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6"
+                            onClick={() => handleViewDetails(chw)}
+                          >
                             <EyeIcon className="w-3 h-3" />
                           </Button>
                         </div>
@@ -411,6 +551,448 @@ export const CHWManagement = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal with blurred background */}
+      {isModalOpen && selectedCHW && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseModal}
+        >
+          {/* Blurred backdrop - fixed */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          
+          {/* Modal content */}
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[600px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header with avatar and name */}
+            <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                {selectedCHW.full_name ? (
+                  <span className="text-xl font-semibold text-gray-600">
+                    {selectedCHW.full_name.charAt(0).toUpperCase()}
+                  </span>
+                ) : (
+                  <span className="text-xl font-semibold text-gray-600">?</span>
+                )}
+              </div>
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg">
+                  {selectedCHW.full_name || "N/A"}
+                </h3>
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                  {selectedCHW.id ? `USR-${String(selectedCHW.id).padStart(4, '0')}` : "USR-0000"}
+                </p>
+              </div>
+            </div>
+
+            {/* Personal Info Section */}
+            <div>
+              <h4 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                Personal Info
+              </h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Full name
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedCHW.full_name || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Gender
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedCHW.gender || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Phone number
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedCHW.phone_number || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Location
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedCHW.location || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Date Joined
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedCHW.start_date || selectedCHW.date_joined || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    National Id
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedCHW.national_id || selectedCHW.nationalId || "N/A"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal with blurred background */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseEditModal}
+        >
+          {/* Blurred backdrop - fixed */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          
+          {/* Modal content */}
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header */}
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Edit CHW
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Update CHW information in your organization
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmitEdit} className="space-y-6">
+              {/* Personal Information Section */}
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Full name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter a full name"
+                      value={editFormData.full_name}
+                      onChange={(e) => handleInputChange("full_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Email<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={editFormData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      National Id<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="16-digit Number"
+                      value={editFormData.national_id}
+                      onChange={(e) => handleInputChange("national_id", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Phone number<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder="+250XXXXXXXXX"
+                      value={editFormData.phone_number}
+                      onChange={(e) => handleInputChange("phone_number", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Gender<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.gender} 
+                      onValueChange={(value) => handleInputChange("gender", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue
+                          placeholder="select a gender"
+                          className="[font-family:'Poppins',Helvetica] font-normal text-[#000000b0] text-sm"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Area of Operation Section */}
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Area of Operation
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      District<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter district"
+                      value={editFormData.district}
+                      onChange={(e) => handleInputChange("district", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Sector<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter sector"
+                      value={editFormData.sector}
+                      onChange={(e) => handleInputChange("sector", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Cell<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter cell"
+                      value={editFormData.cell}
+                      onChange={(e) => handleInputChange("cell", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Village<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter village"
+                      value={editFormData.village}
+                      onChange={(e) => handleInputChange("village", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Role Information Section */}
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Role information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Role type<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter role type"
+                      value={editFormData.role_type}
+                      onChange={(e) => handleInputChange("role_type", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Employment type<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.employment_type} 
+                      onValueChange={(value) => handleInputChange("employment_type", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue
+                          placeholder="select employment type"
+                          className="[font-family:'Poppins',Helvetica] font-normal text-[#000000b0] text-sm"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Contract">Contract</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Start Date Section */}
+              <div>
+                <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                  Start Date
+                </label>
+                <Input
+                  type="date"
+                  value={editFormData.start_date}
+                  onChange={(e) => handleInputChange("start_date", e.target.value)}
+                  className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseEditModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Cancel
+                  </span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Update CHW
+                  </span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal with blurred background */}
+      {isDeleteModalOpen && selectedCHW && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseDeleteModal}
+        >
+          {/* Blurred backdrop - fixed */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          
+          {/* Modal content */}
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[500px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseDeleteModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <Power className="w-5 h-5 text-gray-600" />
+              </div>
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
+                Deactivate CHW
+              </h2>
+            </div>
+
+            {/* Confirmation message */}
+            <div className="mb-6">
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm leading-relaxed">
+                Are you sure you want to deactivate this user? They will no longer have access to the system until reactivated.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                  Confirm
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDeleteModal}
+                className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#000000] hover:bg-gray-50"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                  Cancel
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

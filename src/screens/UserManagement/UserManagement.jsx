@@ -6,9 +6,11 @@ import {
   MenuIcon,
   PencilIcon,
   PlusIcon,
+  Power,
   SearchIcon,
   Trash2Icon,
   RotateCcwIcon,
+  X,
 } from "lucide-react";
 import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
@@ -93,6 +95,18 @@ export const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    userId: "",
+    fullName: "",
+    nationalId: "",
+    cell: "",
+    insurance: "",
+    healthStatus: "",
+  });
 
   const filteredUsers = userData.filter((user) => {
     const matchesSearch =
@@ -110,6 +124,93 @@ export const UserManagement = () => {
 
     return matchesSearch && matchesStatus && matchesLocation;
   });
+
+  const handleViewDetails = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    try {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+    } catch (e) {
+      // If parsing fails, return empty string
+    }
+    return "";
+  };
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setEditFormData({
+      userId: user.userId || "",
+      fullName: user.fullName || "",
+      nationalId: user.nationalId || "",
+      cell: user.cell || "",
+      insurance: user.insurance || "",
+      healthStatus: user.healthStatus || "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedUser(null);
+    setEditFormData({
+      userId: "",
+      fullName: "",
+      nationalId: "",
+      cell: "",
+      insurance: "",
+      healthStatus: "",
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    // TODO: Implement API call to update user
+    console.log("Updating user:", editFormData);
+    // After successful update, refresh the list and close modal
+    handleCloseEditModal();
+  };
+
+  const handleDeleteUser = (user) => {
+    setSelectedUser(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedUser) {
+      // TODO: Implement API call to deactivate/delete user
+      console.log("Deactivating user:", selectedUser);
+      // After successful deactivation, refresh the list and close modal
+      handleCloseDeleteModal();
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -291,13 +392,28 @@ export const UserManagement = () => {
                       </TableCell>
                       <TableCell className="px-2 py-1">
                         <div className="flex items-center gap-1"> {/* slightly tighter buttons */}
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6"
+                            onClick={() => handleEditUser(user)}
+                          >
                             <PencilIcon className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6"
+                            onClick={() => handleViewDetails(user)}
+                          >
                             <EyeIcon className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6"
+                            onClick={() => handleDeleteUser(user)}
+                          >
                             <Trash2Icon className="w-3 h-3" />
                           </Button>
                         </div>
@@ -350,6 +466,353 @@ export const UserManagement = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* View Details Modal with blurred background */}
+      {isModalOpen && selectedUser && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseModal}
+        >
+          {/* Blurred backdrop - fixed */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          
+          {/* Modal content */}
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[600px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header with avatar and name */}
+            <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                {selectedUser.fullName ? (
+                  <span className="text-xl font-semibold text-gray-600">
+                    {selectedUser.fullName.charAt(0).toUpperCase()}
+                  </span>
+                ) : (
+                  <span className="text-xl font-semibold text-gray-600">?</span>
+                )}
+              </div>
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg">
+                  {selectedUser.fullName || "N/A"}
+                </h3>
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                  {selectedUser.userId || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            {/* Personal Info Section */}
+            <div>
+              <h4 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                Personal Info
+              </h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Full name
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedUser.fullName || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    User ID
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedUser.userId || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    National ID / Phone
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedUser.nationalId || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Cell
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedUser.cell || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Insurance
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedUser.insurance || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Health Status
+                  </p>
+                  <Badge
+                    className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-[10px] px-2 py-0.5 ${
+                      selectedUser.healthStatus === "SICK"
+                        ? "bg-[#fde7e7] text-[#b00000]"
+                        : "bg-[#d7f7e7] text-[#006633]"
+                    }`}
+                  >
+                    {selectedUser.healthStatus || "N/A"}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal with blurred background */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseEditModal}
+        >
+          {/* Blurred backdrop - fixed */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          
+          {/* Modal content */}
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header */}
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Edit User
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Update user information in your organization
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmitEdit} className="space-y-6">
+              {/* Personal Information Section */}
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Full name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter full name"
+                      value={editFormData.fullName}
+                      onChange={(e) => handleInputChange("fullName", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      User ID<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter user ID"
+                      value={editFormData.userId}
+                      onChange={(e) => handleInputChange("userId", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      National ID / Phone<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter national ID or phone"
+                      value={editFormData.nationalId}
+                      onChange={(e) => handleInputChange("nationalId", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Cell<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter cell"
+                      value={editFormData.cell}
+                      onChange={(e) => handleInputChange("cell", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Insurance<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.insurance} 
+                      onValueChange={(value) => handleInputChange("insurance", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue
+                          placeholder="select insurance"
+                          className="[font-family:'Poppins',Helvetica] font-normal text-[#000000b0] text-sm"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Mutuelle">Mutuelle</SelectItem>
+                        <SelectItem value="RSSB">RSSB</SelectItem>
+                        <SelectItem value="Private">Private</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Health Status<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.healthStatus} 
+                      onValueChange={(value) => handleInputChange("healthStatus", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue
+                          placeholder="select health status"
+                          className="[font-family:'Poppins',Helvetica] font-normal text-[#000000b0] text-sm"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CLEAN">CLEAN</SelectItem>
+                        <SelectItem value="SICK">SICK</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseEditModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Cancel
+                  </span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Update User
+                  </span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal with blurred background */}
+      {isDeleteModalOpen && selectedUser && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseDeleteModal}
+        >
+          {/* Blurred backdrop - fixed */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          
+          {/* Modal content */}
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[500px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseDeleteModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <Power className="w-5 h-5 text-gray-600" />
+              </div>
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
+                Deactivate User
+              </h2>
+            </div>
+
+            {/* Confirmation message */}
+            <div className="mb-6">
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm leading-relaxed">
+                Are you sure you want to deactivate this user? They will no longer have access to the system until reactivated.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                  Confirm
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDeleteModal}
+                className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#000000] hover:bg-gray-50"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                  Cancel
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

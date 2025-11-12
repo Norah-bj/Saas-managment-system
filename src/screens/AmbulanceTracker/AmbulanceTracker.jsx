@@ -6,11 +6,13 @@ import {
   MenuIcon,
   PencilIcon,
   PlusIcon,
+  Power,
   RotateCcwIcon,
   SearchIcon,
   Trash2Icon,
+  X,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
 import { Card, CardContent } from "../../components/Card";
@@ -96,6 +98,87 @@ const chartData = [
 const COLORS = ["#001240", "#a4b0ff", "#4d8dff", "#d1dfff"];
 
 export const AmbulanceTracker = () => {
+  const [selectedAmbulance, setSelectedAmbulance] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    plateNumber: "",
+    driver: "",
+    currentLocation: "",
+    vehicleType: "",
+    maintenanceDate: "",
+    status: "",
+  });
+
+  const handleViewDetails = (ambulance) => {
+    setSelectedAmbulance(ambulance);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedAmbulance(null);
+  };
+
+  const handleEditAmbulance = (ambulance) => {
+    setSelectedAmbulance(ambulance);
+    setEditFormData({
+      plateNumber: ambulance.plateNumber || "",
+      driver: ambulance.driver || "",
+      currentLocation: ambulance.currentLocation || "",
+      vehicleType: ambulance.vehicleType || "",
+      maintenanceDate: ambulance.maintenanceDate || "",
+      status: ambulance.status || "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedAmbulance(null);
+    setEditFormData({
+      plateNumber: "",
+      driver: "",
+      currentLocation: "",
+      vehicleType: "",
+      maintenanceDate: "",
+      status: "",
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    // TODO: Implement API call to update ambulance
+    console.log("Updating ambulance:", editFormData);
+    handleCloseEditModal();
+  };
+
+  const handleDeleteAmbulance = (ambulance) => {
+    setSelectedAmbulance(ambulance);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedAmbulance(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedAmbulance) {
+      // TODO: Implement API call to delete ambulance
+      console.log("Deleting ambulance:", selectedAmbulance);
+      handleCloseDeleteModal();
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col">
       {/* Header */}
@@ -346,13 +429,28 @@ export const AmbulanceTracker = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1.5">
-                          <Button variant="ghost" size="icon" className="p-[3px]">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="p-[3px]"
+                            onClick={() => handleEditAmbulance(row)}
+                          >
                             <PencilIcon className="w-[16px] h-[16px]" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="p-[3px]">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="p-[3px]"
+                            onClick={() => handleDeleteAmbulance(row)}
+                          >
                             <Trash2Icon className="w-[16px] h-[16px]" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="p-[3px]">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="p-[3px]"
+                            onClick={() => handleViewDetails(row)}
+                          >
                             <EyeIcon className="w-[16px] h-[16px]" />
                           </Button>
                         </div>
@@ -396,6 +494,284 @@ export const AmbulanceTracker = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* View Details Modal */}
+      {isModalOpen && selectedAmbulance && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[600px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                <span className="text-xl font-semibold text-gray-600">
+                  {selectedAmbulance.plateNumber?.charAt(0) || "?"}
+                </span>
+              </div>
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg">
+                  {selectedAmbulance.plateNumber || "N/A"}
+                </h3>
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                  {selectedAmbulance.driver || "N/A"}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h4 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                Ambulance Details
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Plate Number
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAmbulance.plateNumber || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Driver
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAmbulance.driver || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Current Location
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAmbulance.currentLocation || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Vehicle Type
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAmbulance.vehicleType || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Maintenance Date
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedAmbulance.maintenanceDate || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Status
+                  </p>
+                  <Badge className="flex items-center gap-1 bg-[#05c16833] text-[#14c973] border-[0.6px] border-[#05c16880] text-[12px] px-2 py-[2px] rounded-[3px]">
+                    <div className="w-1.5 h-1.5 bg-[#05c168] rounded-full" />
+                    {selectedAmbulance.status || "N/A"}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseEditModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Edit Ambulance
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Update ambulance information
+              </p>
+            </div>
+            <form onSubmit={handleSubmitEdit} className="space-y-6">
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Ambulance Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Plate Number<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter plate number"
+                      value={editFormData.plateNumber}
+                      onChange={(e) => handleInputChange("plateNumber", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Driver<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter driver name"
+                      value={editFormData.driver}
+                      onChange={(e) => handleInputChange("driver", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Current Location<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter current location"
+                      value={editFormData.currentLocation}
+                      onChange={(e) => handleInputChange("currentLocation", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Vehicle Type<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter vehicle type"
+                      value={editFormData.vehicleType}
+                      onChange={(e) => handleInputChange("vehicleType", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Maintenance Date
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter maintenance date"
+                      value={editFormData.maintenanceDate}
+                      onChange={(e) => handleInputChange("maintenanceDate", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Status<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.status} 
+                      onValueChange={(value) => handleInputChange("status", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue placeholder="select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Online">Online</SelectItem>
+                        <SelectItem value="Offline">Offline</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseEditModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Cancel</span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Update Ambulance</span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && selectedAmbulance && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseDeleteModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[500px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseDeleteModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <Power className="w-5 h-5 text-gray-600" />
+              </div>
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
+                Delete Ambulance
+              </h2>
+            </div>
+            <div className="mb-6">
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm leading-relaxed">
+                Are you sure you want to delete this ambulance record? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Confirm</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDeleteModal}
+                className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#000000] hover:bg-gray-50"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Cancel</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

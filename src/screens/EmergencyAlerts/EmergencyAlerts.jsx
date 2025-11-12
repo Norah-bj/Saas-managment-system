@@ -5,10 +5,12 @@ import {
   EyeIcon,
   MenuIcon,
   PencilIcon,
+  Power,
   RotateCcwIcon,
   SearchIcon,
   Trash2Icon,
   TruckIcon,
+  X,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Badge } from "../../components/Badge";
@@ -100,6 +102,18 @@ export const EmergencyAlerts = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedEmergency, setSelectedEmergency] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    alert_id: "",
+    caller_name: "",
+    phone_number: "",
+    location: "",
+    maintenance_date: "",
+    status: "",
+  });
 
   useEffect(() => {
     fetchData();
@@ -157,6 +171,74 @@ export const EmergencyAlerts = () => {
         return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const handleViewDetails = (emergency) => {
+    setSelectedEmergency(emergency);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEmergency(null);
+  };
+
+  const handleEditEmergency = (emergency) => {
+    setSelectedEmergency(emergency);
+    setEditFormData({
+      alert_id: emergency.alert_id || "",
+      caller_name: emergency.caller_name || "",
+      phone_number: emergency.phone_number || "",
+      location: emergency.location || "",
+      maintenance_date: emergency.maintenance_date || "",
+      status: emergency.status || "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedEmergency(null);
+    setEditFormData({
+      alert_id: "",
+      caller_name: "",
+      phone_number: "",
+      location: "",
+      maintenance_date: "",
+      status: "",
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    // TODO: Implement API call to update emergency
+    console.log("Updating emergency:", editFormData);
+    handleCloseEditModal();
+  };
+
+  const handleDeleteEmergency = (emergency) => {
+    setSelectedEmergency(emergency);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedEmergency(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedEmergency) {
+      // TODO: Implement API call to delete emergency
+      console.log("Deleting emergency:", selectedEmergency);
+      handleCloseDeleteModal();
     }
   };
 
@@ -415,13 +497,28 @@ export const EmergencyAlerts = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleEditEmergency(emergency)}
+                          >
                             <PencilIcon className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleDeleteEmergency(emergency)}
+                          >
                             <Trash2Icon className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleViewDetails(emergency)}
+                          >
                             <EyeIcon className="w-4 h-4" />
                           </Button>
                         </div>
@@ -464,6 +561,286 @@ export const EmergencyAlerts = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* View Details Modal */}
+      {isModalOpen && selectedEmergency && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[600px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                <span className="text-xl font-semibold text-gray-600">
+                  {selectedEmergency.caller_name?.charAt(0).toUpperCase() || "?"}
+                </span>
+              </div>
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg">
+                  {selectedEmergency.caller_name || "N/A"}
+                </h3>
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                  {selectedEmergency.alert_id || "N/A"}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h4 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                Emergency Details
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Alert ID
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedEmergency.alert_id || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Caller Name
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedEmergency.caller_name || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Phone Number
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedEmergency.phone_number || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Location
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedEmergency.location || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Maintenance Date
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
+                    {selectedEmergency.maintenance_date || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs mb-1">
+                    Status
+                  </p>
+                  <Badge className={`rounded-[3px] text-[12px] px-3 py-[2px] ${getStatusBadgeColor(selectedEmergency.status)}`}>
+                    {selectedEmergency.status || "N/A"}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseEditModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Edit Emergency
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Update emergency information
+              </p>
+            </div>
+            <form onSubmit={handleSubmitEdit} className="space-y-6">
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Emergency Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Alert ID<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter alert ID"
+                      value={editFormData.alert_id}
+                      onChange={(e) => handleInputChange("alert_id", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Caller Name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter caller name"
+                      value={editFormData.caller_name}
+                      onChange={(e) => handleInputChange("caller_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Phone Number<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder="+250XXXXXXXXX"
+                      value={editFormData.phone_number}
+                      onChange={(e) => handleInputChange("phone_number", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Location<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter location"
+                      value={editFormData.location}
+                      onChange={(e) => handleInputChange("location", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Maintenance Date
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter maintenance date"
+                      value={editFormData.maintenance_date}
+                      onChange={(e) => handleInputChange("maintenance_date", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Status<span className="text-red-500">*</span>
+                    </label>
+                    <Select 
+                      value={editFormData.status} 
+                      onValueChange={(value) => handleInputChange("status", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue placeholder="select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Available">Available</SelectItem>
+                        <SelectItem value="Urgent">Urgent</SelectItem>
+                        <SelectItem value="Critical">Critical</SelectItem>
+                        <SelectItem value="Moderate">Moderate</SelectItem>
+                        <SelectItem value="In Transit">In Transit</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseEditModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Cancel</span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Update Emergency</span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && selectedEmergency && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseDeleteModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div 
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[500px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseDeleteModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <Power className="w-5 h-5 text-gray-600" />
+              </div>
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
+                Delete Emergency
+              </h2>
+            </div>
+            <div className="mb-6">
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm leading-relaxed">
+                Are you sure you want to delete this emergency record? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Confirm</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDeleteModal}
+                className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#000000] hover:bg-gray-50"
+              >
+                <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">Cancel</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
