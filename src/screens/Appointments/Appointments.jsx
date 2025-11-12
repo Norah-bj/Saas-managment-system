@@ -207,7 +207,7 @@ export const Appointments = () => {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="search anything..."
-              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[3px]"
+              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[3px]" /* Reduced h-[38px] to h-[34px] */
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
@@ -236,7 +236,7 @@ export const Appointments = () => {
           <div className="flex items-center gap-2"> {/* Reduced gap from 3 to 2 */}
             <Button
               variant="outline"
-              className="h-auto px-3 py-1.5 rounded-[3px] border border-[#0000004c]" 
+              className="h-auto px-3 py-1.5 rounded-[3px] border border-[#0000004c]" /* Reduced py-2 to py-1.5, px-4 to px-3 */
             >
               <DownloadIcon className="w-4 h-4 mr-1.5" /> {/* Reduced mr-2 to mr-1.5 */}
               <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-xs"> {/* Reduced text-sm to text-xs */}
@@ -297,7 +297,7 @@ export const Appointments = () => {
                       variant="ghost"
                       size="icon"
                       onClick={nextMonth}
-                      className="h-7 w-7"
+                      className="h-7 w-7" 
                     >
                       <ChevronRightIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
                     </Button>
@@ -536,14 +536,14 @@ export const Appointments = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7" 
+                            className="h-7 w-7"
                           >
                             <PencilIcon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7" 
+                            className="h-7 w-7"
                           >
                             <Trash2Icon className="w-3.5 h-3.5" /> {/* Reduced w-4 h-4 to w-3.5 h-3.5 */}
                           </Button>
@@ -570,7 +570,7 @@ export const Appointments = () => {
               <div className="flex items-center gap-1.5"> {/* Reduced gap-2 to gap-1.5 */}
                 <Button
                   variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]"
+                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]" 
                 >
                   <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
                     Previous

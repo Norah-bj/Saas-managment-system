@@ -7,6 +7,7 @@ import { ReportsAnalytics } from "./screens/ReportsAnalytics";
 import { UserManagement } from "./screens/UserManagement";
 import { CHWManagement } from "./screens/CHWManagement";
 import { EmergencyAlerts } from "./screens/EmergencyAlerts";
+import { Appointments } from "./screens/Appointments";
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
           <Route path="/user-management" element={<UserManagement />} />
           <Route path="/chw-management" element={<CHWManagement />} />
           <Route path="/emergency-alerts" element={<EmergencyAlerts />} />
-          <Route path="/appointments" element={<Dashboard />} />
+          <Route path="/appointments" element={<Appointments />} />
           <Route path="/settings" element={<Dashboard />} />
         </Routes>
       </Layout>
