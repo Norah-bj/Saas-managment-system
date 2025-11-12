@@ -60,7 +60,7 @@ const statsData = [
     icon: "/vector-4.svg",
   },
   {
-    title: "Busy ambulances",
+    title: "Offline ambulances",
     value: "89",
     change: "+12 from last month",
     icon: "/vector-4.svg",

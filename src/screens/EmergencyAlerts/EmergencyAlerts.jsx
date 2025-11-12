@@ -206,12 +206,12 @@ export const EmergencyAlerts = () => {
                 Export csv
               </span>
             </Button>
-            <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
+            {/* <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
               <AlertTriangleIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
                 Assign cases
               </span>
-            </Button>
+            </Button> */}
           </div>
         </div>
 
