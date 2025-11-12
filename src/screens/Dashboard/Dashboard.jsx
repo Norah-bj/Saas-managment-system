@@ -135,7 +135,7 @@ export const Dashboard = () => {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="search anything..."
-              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[3px]"
+              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]"
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
@@ -148,7 +148,7 @@ export const Dashboard = () => {
           </Button>
         </div>
       </header>
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="flex-1 p-4 overflow-auto">
         <div className="mb-6">
           <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-lg mb-1">
             Dashboard

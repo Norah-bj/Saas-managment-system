@@ -120,7 +120,7 @@ export const UserManagement = () => {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="search anything..."
-              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[5px]"
+              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]"
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
@@ -136,7 +136,7 @@ export const UserManagement = () => {
       </header>
 
       {/* Main Section */}
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="flex-1 p-4 overflow-auto">
         {/* Top title section */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -158,12 +158,12 @@ export const UserManagement = () => {
                 Export CSV
               </span>
             </Button>
-            <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
+            {/* <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
               <PlusIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
                 Add appointment
               </span>
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -250,55 +250,55 @@ export const UserManagement = () => {
 
             {/* Data Table */}
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="text-sm"> {/* reduced default font size */}
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[50px]">
+                    <TableHead className="w-[50px] px-2 py-1">
                       <Checkbox />
                     </TableHead>
-                    <TableHead>Userid</TableHead>
-                    <TableHead>Full name</TableHead>
-                    <TableHead>National ID</TableHead>
-                    <TableHead>Cell</TableHead>
-                    <TableHead>Insurance</TableHead>
-                    <TableHead>Health status</TableHead>
-                    <TableHead>Action</TableHead>
+                    <TableHead className="px-2 py-1">Userid</TableHead>
+                    <TableHead className="px-2 py-1">Full name</TableHead>
+                    <TableHead className="px-2 py-1">National ID</TableHead>
+                    <TableHead className="px-2 py-1">Cell</TableHead>
+                    <TableHead className="px-2 py-1">Insurance</TableHead>
+                    <TableHead className="px-2 py-1">Health status</TableHead>
+                    <TableHead className="px-2 py-1">Action</TableHead>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
                   {filteredUsers.map((user) => (
-                    <TableRow key={user.userId}>
-                      <TableCell>
+                    <TableRow key={user.userId} className="text-sm"> {/* smaller font for rows */}
+                      <TableCell className="px-2 py-1">
                         <Checkbox />
                       </TableCell>
-                      <TableCell>{user.userId}</TableCell>
-                      <TableCell>{user.fullName}</TableCell>
-                      <TableCell>{user.nationalId}</TableCell>
-                      <TableCell>{user.cell}</TableCell>
-                      <TableCell>{user.insurance}</TableCell>
-                      <TableCell>
+                      <TableCell className="px-2 py-1">{user.userId}</TableCell>
+                      <TableCell className="px-2 py-1">{user.fullName}</TableCell>
+                      <TableCell className="px-2 py-1">{user.nationalId}</TableCell>
+                      <TableCell className="px-2 py-1">{user.cell}</TableCell>
+                      <TableCell className="px-2 py-1">{user.insurance}</TableCell>
+                      <TableCell className="px-2 py-1">
                         <Badge
                           variant="secondary"
                           className={`${
                             user.healthStatus === "SICK"
                               ? "bg-[#fde7e7] text-[#b00000]"
                               : "bg-[#d7f7e7] text-[#006633]"
-                          } rounded-[3px] font-normal text-xs px-3 py-1`}
+                          } rounded-[3px] font-normal text-[10px] px-2 py-0.5`} 
                         >
                           {user.healthStatus}
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <PencilIcon className="w-4 h-4" />
+                      <TableCell className="px-2 py-1">
+                        <div className="flex items-center gap-1"> {/* slightly tighter buttons */}
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <PencilIcon className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <EyeIcon className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <EyeIcon className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Trash2Icon className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <Trash2Icon className="w-3 h-3" />
                           </Button>
                         </div>
                       </TableCell>

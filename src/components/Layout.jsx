@@ -3,13 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const navigationItems = [
   { label: "Dashboard", icon: "/vector-1.svg", path: "/" },
-  { label: "User management", icon: "/frame-1261155312.svg", path: "/user-management" },
-  { label: "CHW management", icon: "/frame-1261155312.svg", path: "/chw-management" },
-  { label: "Emergency & Alerts", icon: "/frame-1261155311.svg", path: "/emergency-alerts" },
-  { label: "Ambulance tracker", icon: "/frame-1261155307.svg", path: "/ambulance-tracker" },
+  { label: "User management", icon: "/vector-19.svg", path: "/user-management" },
+  { label: "CHW management", icon: "/vector-19.svg", path: "/chw-management" },
+  { label: "Emergency & Alerts", icon: "/Vector-18.svg", path: "/emergency-alerts" },
+  { label: "Ambulance tracker", icon: "/vector-4.svg", path: "/ambulance-tracker" },
   { label: "Appointments", icon: "/vector-1.svg", path: "/appointments" },
-  { label: "Data analytics", icon: "/frame-1261155309.svg", path: "/reports-analytics" },
-  { label: "settings", icon: "/frame-1261155310.svg", path: "/settings" },
+  { label: "Data analytics", icon: "/vector-20.svg", path: "/reports-analytics" },
+  { label: "settings", icon: "/vector-2.svg", path: "/settings" },
 ];
 
 export const Layout = ({ children }) => {
@@ -22,11 +22,11 @@ export const Layout = ({ children }) => {
       <aside className="fixed top-0 left-0 w-[220px] h-screen bg-[#09111e] flex flex-col">
         {/* Logo */}
         <div className="p-4">
-          <div className="flex items-center gap-1 mb-4 justify-center">
+          <div className="flex items-center gap-5 mb-4">
             <img
-              src="/frame-1261155314.svg"
+              src="/mother_logo.svg"
               alt="Mother link logo"
-              className="w-[14px] h-[22px]"
+              className="w-[35px] h-[35px]"
             />
             <span className="[font-family:'Poppins',Helvetica] font-semibold text-white text-sm">
               Mother link
@@ -34,11 +34,11 @@ export const Layout = ({ children }) => {
           </div>
 
           {/* Profile */}
-          <div className="flex flex-col items-center mb-4">
+          <div className="flex flex-col items-center mb-2">
             <img
-              className="w-[60px] h-[60px] rounded-full object-cover mb-2"
+              className="w-[100px] h-[100px] rounded-full object-cover mb-2"
               alt="Profile"
-              src="/ellipse-39.svg"
+              src="/Profile.png"
             />
             <div className="[font-family:'Poppins',Helvetica] font-semibold text-white text-sm text-center">
               Welcome back
@@ -77,7 +77,7 @@ export const Layout = ({ children }) => {
         {/* Logout */}
         <div className="p-3 mt-auto">
           <button className="w-full text-left px-3 py-2 [font-family:'Poppins',Helvetica] font-semibold text-white text-sm flex items-center gap-2 hover:bg-white/10 transition">
-            <img src="/logout-icon.svg" alt="Logout" className="w-[16px] h-[16px] invert" />
+            <img src="/vector-5.svg" alt="Logout" className="w-[16px] h-[16px] invert" />
             Logout
           </button>
         </div>

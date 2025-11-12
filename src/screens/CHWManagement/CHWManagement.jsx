@@ -111,7 +111,7 @@ export const CHWManagement = () => {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="search anything..."
-              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[5px]"
+              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]"
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
@@ -138,7 +138,7 @@ export const CHWManagement = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button
+            {/* <Button
               variant="outline"
               className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c]"
             >
@@ -146,7 +146,7 @@ export const CHWManagement = () => {
               <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
                 Message CHW
               </span>
-            </Button>
+            </Button> */}
             <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
               <PlusIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
@@ -269,39 +269,40 @@ export const CHWManagement = () => {
               </div>
             </div>
 
-            <Table>
+            <Table className="text-sm"> {/* smaller default font for table */}
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[50px]">
+                  <TableHead className="w-[50px] px-2 py-1">
                     <Checkbox />
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Full name
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Gender
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Phone number
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Location
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Start date
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Status
                   </TableHead>
-                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm">
+                  <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Action
                   </TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={8} className="text-center py-4">
                       <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
                         Loading...
                       </span>
@@ -309,7 +310,7 @@ export const CHWManagement = () => {
                   </TableRow>
                 ) : filteredData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={8} className="text-center py-4">
                       <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
                         No CHWs found
                       </span>
@@ -317,28 +318,28 @@ export const CHWManagement = () => {
                   </TableRow>
                 ) : (
                   filteredData.map((chw, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
+                    <TableRow key={index} className="text-sm">
+                      <TableCell className="px-2 py-1">
                         <Checkbox />
                       </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
+                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm px-2 py-1">
                         {chw.full_name}
                       </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
+                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm px-2 py-1">
                         {chw.gender}
                       </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
+                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm px-2 py-1">
                         {chw.phone_number}
                       </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
+                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm px-2 py-1">
                         {chw.location}
                       </TableCell>
-                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm">
+                      <TableCell className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm px-2 py-1">
                         {chw.start_date}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="px-2 py-1">
                         <Badge
-                          className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-xs px-3 py-1 ${
+                          className={`rounded-[3px] [font-family:'Poppins',Helvetica] font-normal text-[10px] px-2 py-0.5 ${
                             chw.status === "Active"
                               ? "bg-[#d7f7e7] text-[#006633]"
                               : "bg-[#f5f5f5] text-[#666666]"
@@ -347,28 +348,16 @@ export const CHWManagement = () => {
                           {chw.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <PencilIcon className="w-4 h-4" />
+                      <TableCell className="px-2 py-1">
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <PencilIcon className="w-3 h-3" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <Trash2Icon className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <Trash2Icon className="w-3 h-3" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <EyeIcon className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <EyeIcon className="w-3 h-3" />
                           </Button>
                         </div>
                       </TableCell>
@@ -377,6 +366,7 @@ export const CHWManagement = () => {
                 )}
               </TableBody>
             </Table>
+
 
             <div className="flex items-center justify-between mt-6">
               <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">

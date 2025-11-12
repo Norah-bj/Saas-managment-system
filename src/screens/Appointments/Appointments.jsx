@@ -207,7 +207,7 @@ export const Appointments = () => {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="search anything..."
-              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[38px] rounded-[3px]" /* Reduced h-[38px] to h-[34px] */
+              className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]" /* Reduced h-[38px] to h-[34px] */
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
