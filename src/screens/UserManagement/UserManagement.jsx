@@ -254,7 +254,7 @@ export const UserManagement = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px] px-2 py-1">
-                      <Checkbox />
+                      {/* <Checkbox /> */}
                     </TableHead>
                     <TableHead className="px-2 py-1">Userid</TableHead>
                     <TableHead className="px-2 py-1">Full name</TableHead>

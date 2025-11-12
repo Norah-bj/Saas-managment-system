@@ -184,7 +184,7 @@ export const EmergencyAlerts = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="flex-1 p-4 overflow-auto">
         {/* Top Stats */}
         <div className="flex items-center justify-between mb-6">
           <div>

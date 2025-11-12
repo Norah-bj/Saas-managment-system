@@ -126,7 +126,7 @@ export const CHWManagement = () => {
         </div>
       </header>
 
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="flex-1 p-4 overflow-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
@@ -273,7 +273,7 @@ export const CHWManagement = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[50px] px-2 py-1">
-                    <Checkbox />
+                    {/* <Checkbox /> */}
                   </TableHead>
                   <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm px-2 py-1">
                     Full name
