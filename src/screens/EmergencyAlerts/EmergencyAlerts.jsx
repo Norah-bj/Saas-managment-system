@@ -364,37 +364,38 @@ export const EmergencyAlerts = () => {
               </div>
             </div>
 
-            <Table>
+            <Table className="text-[13px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[50px]">
-                    <Checkbox />
+                  <TableHead className="w-[50px] text-[12px]">
+                    {/* <Checkbox /> */}
                   </TableHead>
-                  <TableHead>Alert ID</TableHead>
-                  <TableHead>Caller name</TableHead>
-                  <TableHead>Phone number</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Maintenance date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className="text-[12px]">Alert ID</TableHead>
+                  <TableHead className="text-[12px]">Caller name</TableHead>
+                  <TableHead className="text-[12px]">Phone number</TableHead>
+                  <TableHead className="text-[12px]">Location</TableHead>
+                  <TableHead className="text-[12px]">Maintenance date</TableHead>
+                  <TableHead className="text-[12px]">Status</TableHead>
+                  <TableHead className="text-[12px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={8} className="text-center py-6 text-[13px]">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : emergencies.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={8} className="text-center py-6 text-[13px]">
                       No emergencies found
                     </TableCell>
                   </TableRow>
                 ) : (
                   emergencies.map((emergency) => (
-                    <TableRow key={emergency.id}>
+                    <TableRow key={emergency.id} className="text-[13px]">
                       <TableCell>
                         <Checkbox />
                       </TableCell>
@@ -405,7 +406,7 @@ export const EmergencyAlerts = () => {
                       <TableCell>{emergency.maintenance_date}</TableCell>
                       <TableCell>
                         <Badge
-                          className={`rounded-[3px] text-xs px-3 py-1 ${getStatusBadgeColor(
+                          className={`rounded-[3px] text-[12px] px-3 py-[2px] ${getStatusBadgeColor(
                             emergency.status
                           )}`}
                         >
@@ -431,7 +432,7 @@ export const EmergencyAlerts = () => {
               </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center justify-between mt-4">
               <span className="text-sm text-[#000000a6]">
                 1—10 of {emergencies.length}
               </span>

@@ -77,7 +77,7 @@ export const Layout = ({ children }) => {
         {/* Logout */}
         <div className="p-3 mt-auto">
           <button className="w-full text-left px-3 py-2 [font-family:'Poppins',Helvetica] font-semibold text-white text-sm flex items-center gap-2 hover:bg-white/10 transition">
-            <img src="/vector-5.svg" alt="Logout" className="w-[16px] h-[16px] invert" />
+            <img src="/logout.svg" alt="Logout" className="w-[16px] h-[16px] invert" />
             Logout
           </button>
         </div>

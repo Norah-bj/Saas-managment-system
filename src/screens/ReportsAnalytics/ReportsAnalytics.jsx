@@ -152,7 +152,7 @@ export const ReportsAnalytics = () => {
                 <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base">
                   Appointment Analytics
                 </div>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   className="h-auto px-3 py-1 bg-[#09111e] text-white rounded-sm"
@@ -160,7 +160,7 @@ export const ReportsAnalytics = () => {
                   <span className="[font-family:'Poppins',Helvetica] font-normal text-xs">
                     All time
                   </span>
-                </Button>
+                </Button> */}
               </div>
 
               <div className="flex items-center justify-between">
@@ -209,7 +209,7 @@ export const ReportsAnalytics = () => {
                 <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base">
                   Healthcare Live
                 </div>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   className="h-auto px-3 py-1 bg-[#09111e] text-white rounded-sm"
@@ -217,7 +217,7 @@ export const ReportsAnalytics = () => {
                   <span className="[font-family:'Poppins',Helvetica] font-normal text-xs">
                     All time
                   </span>
-                </Button>
+                </Button> */}
               </div>
 
               <div className="flex items-center justify-between">

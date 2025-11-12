@@ -243,12 +243,12 @@ export const Appointments = () => {
                 Export csv
               </span>
             </Button>
-            <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e]"> {/* Reduced py-2 to py-1.5, px-4 to px-3 */}
-              <PlusIcon className="w-4 h-4 mr-1.5" /> {/* Reduced mr-2 to mr-1.5 */}
-              <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-xs"> {/* Reduced text-sm to text-xs */}
-                Add appointment
-              </span>
-            </Button>
+            {/* <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e]"> Reduced py-2 to py-1.5, px-4 to px-3 */}
+              {/* <PlusIcon className="w-4 h-4 mr-1.5" /> Reduced mr-2 to mr-1.5 */}
+              {/* <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-xs"> Reduced text-sm to text-xs */}
+                {/* Add appointment */}
+              {/* </span> */}
+            {/* </Button> */}
           </div>
         </div>
 
@@ -418,7 +418,7 @@ export const Appointments = () => {
                     placeholder="search by name, phone, or type"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[10px] h-[36px] rounded-[3px]" 
+                    className="pl-10 [font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-xs h-[38px] rounded-[3px]" 
                   />
                 </div>
 
@@ -449,7 +449,7 @@ export const Appointments = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[50px]">
-                    <Checkbox />
+                    {/* <Checkbox /> */}
                   </TableHead>
                   <TableHead className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
                     Patient Name

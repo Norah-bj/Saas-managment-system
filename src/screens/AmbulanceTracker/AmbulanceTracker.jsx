@@ -121,7 +121,7 @@ export const AmbulanceTracker = () => {
       </header>
 
       {/* Body */}
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="flex-1 p-4 overflow-auto">
         {/* Title + Buttons */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl">
@@ -193,7 +193,7 @@ export const AmbulanceTracker = () => {
                 <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base">
                   Ambulance availability
                 </div>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   className="h-auto px-3 py-1 bg-[#09111e] text-white rounded-sm"
@@ -201,22 +201,22 @@ export const AmbulanceTracker = () => {
                   <span className="[font-family:'Poppins',Helvetica] font-normal text-xs">
                     All time
                   </span>
-                </Button>
+                </Button> */}
               </div>
 
               <div className="w-full h-[250px] mb-4">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={90}
+                      outerRadius={120}
                       dataKey="value"
                       nameKey="name"
-                      label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
-                      }
+                      // label={({ name, percent }) =>
+                      //   `${name}: ${(percent * 100).toFixed(0)}%`
+                      // }
                     >
                       {chartData.map((entry, index) => (
                         <Cell
@@ -227,10 +227,29 @@ export const AmbulanceTracker = () => {
                     </Pie>
                     <Tooltip />
                     <Legend
-                      layout="horizontal"
-                      align="center"
                       verticalAlign="bottom"
-                      iconType="circle"
+                      align="center"
+                      iconType="square"
+                      content={() => (
+                        <div className="mt-4 flex gap-4 justify-items-start">
+                          {[
+                            { label: "Available", color: "#09111e" },
+                            { label: "En route", color: "#91b3ff" },
+                            { label: "Maintenance", color: "#d1dfff" },
+                            { label: "Offline", color: "#cccccc" },
+                          ].map((item, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <div
+                                className="w-3 h-3 rounded-[3px]"
+                                style={{ backgroundColor: item.color }}
+                              ></div>
+                              <span className="[font-family:'Poppins',Helvetica] text-[11px] text-[#000]">
+                                {item.label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -239,105 +258,141 @@ export const AmbulanceTracker = () => {
           </Card>
         </div>
 
-        {/* Table Filters */}
-        <div className="mb-6 flex items-center gap-3">
-          <div className="relative flex-1 max-w-[400px]">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="search by name, phone number, or id"
-              className="pl-10 h-[40px] rounded-[7px] border border-[#0000004c]"
-            />
-          </div>
+        <Card className="rounded-[5px] shadow-[1px_1px_6px_#10193466]">
+          <CardContent className="p-5">
 
-          <Select>
-            <SelectTrigger className="w-[150px] h-[40px] rounded-[7px] border border-[#0000004c]">
-              <SelectValue placeholder="status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="online">Online</SelectItem>
-              <SelectItem value="offline">Offline</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Table Filters (now inside card) */}
+            <div className="mb-5 flex flex-wrap items-center justify-between">
+              <div className="relative flex-1 max-w-[400px]">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search by name, phone number, or ID"
+                  className="pl-10 h-[38px] rounded-[6px] border border-[#00000040] text-[13px]"
+                />
+              </div>
 
-          <Select>
-            <SelectTrigger className="w-[150px] h-[40px] rounded-[7px] border border-[#0000004c]">
-              <SelectValue placeholder="All locations" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All locations</SelectItem>
-            </SelectContent>
-          </Select>
+              <div className="flex item-center gap-3">
+                <Select>
+                  <SelectTrigger className="w-[140px] h-[38px] rounded-[6px] border border-[#00000040] text-[13px]">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="online">Online</SelectItem>
+                    <SelectItem value="offline">Offline</SelectItem>
+                  </SelectContent>
+                </Select>
 
-          <Select>
-            <SelectTrigger className="w-[150px] h-[40px] rounded-[3px] border border-[#0000004c]">
-              <SelectValue placeholder="vehicle type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All types</SelectItem>
-            </SelectContent>
-          </Select>
+                <Select>
+                  <SelectTrigger className="w-[140px] h-[38px] rounded-[6px] border border-[#00000040] text-[13px]">
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All locations</SelectItem>
+                  </SelectContent>
+                </Select>
 
-          <Button variant="ghost" size="icon" className="h-[40px] w-[40px]">
-            <FilterIcon className="w-6 h-6" />
-          </Button>
+                <Select>
+                  <SelectTrigger className="w-[140px] h-[38px] rounded-[6px] border border-[#00000040] text-[13px]">
+                    <SelectValue placeholder="Vehicle type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All types</SelectItem>
+                  </SelectContent>
+                </Select>
 
-          <Button variant="ghost" size="icon" className="h-[40px] w-[40px]">
-            <RotateCcwIcon className="w-[15px] h-[15px]" />
-          </Button>
-        </div>
+                <Button variant="ghost" size="icon" className="h-[38px] w-[38px]">
+                  <FilterIcon className="w-5 h-5" />
+                </Button>
 
-        {/* Data Table */}
-        <Card className="rounded-[5px]">
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b">
-                  <TableHead className="w-[50px]">
-                    <Checkbox />
-                  </TableHead>
-                  <TableHead>Amb Plate number</TableHead>
-                  <TableHead>Driver</TableHead>
-                  <TableHead>Current Location</TableHead>
-                  <TableHead>Vehicle type</TableHead>
-                  <TableHead>Maintenance date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tableData.map((row, index) => (
-                  <TableRow key={index} className="border-b">
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>{row.plateNumber}</TableCell>
-                    <TableCell>{row.driver}</TableCell>
-                    <TableCell>{row.currentLocation}</TableCell>
-                    <TableCell>{row.vehicleType}</TableCell>
-                    <TableCell>{row.maintenanceDate}</TableCell>
-                    <TableCell>
-                      <Badge className="bg-[#05c16833] text-[#14c973] border-[0.6px] border-[#05c16880]">
-                        <div className="w-1 h-1 bg-[#05c168] rounded-full mr-1" />
-                        {row.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="p-1">
-                          <PencilIcon className="w-3 h-3" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="p-1">
-                          <Trash2Icon className="w-[13px] h-[13px]" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="p-1">
-                          <EyeIcon className="w-[13px] h-[9px]" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                <Button variant="ghost" size="icon" className="h-[38px] w-[38px]">
+                  <RotateCcwIcon className="w-[14px] h-[14px]" />
+                </Button>
+              </div>
+
+            </div>
+
+            {/* Data Table */}
+            <div className="overflow-x-auto">
+              <Table className="text-[13px]">
+                <TableHeader>
+                  <TableRow className="border-b">
+                    <TableHead className="w-[50px] text-[12px]"></TableHead>
+                    <TableHead className="text-[12px]">Amb Plate number</TableHead>
+                    <TableHead className="text-[12px]">Driver</TableHead>
+                    <TableHead className="text-[12px]">Current Location</TableHead>
+                    <TableHead className="text-[12px]">Vehicle type</TableHead>
+                    <TableHead className="text-[12px]">Maintenance date</TableHead>
+                    <TableHead className="text-[12px]">Status</TableHead>
+                    <TableHead className="text-[12px]">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+
+                <TableBody>
+                  {tableData.map((row, index) => (
+                    <TableRow key={index} className="border-b text-[13px]">
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>{row.plateNumber}</TableCell>
+                      <TableCell>{row.driver}</TableCell>
+                      <TableCell>{row.currentLocation}</TableCell>
+                      <TableCell>{row.vehicleType}</TableCell>
+                      <TableCell>{row.maintenanceDate}</TableCell>
+                      <TableCell>
+                        <Badge className="flex items-center gap-1 bg-[#05c16833] text-[#14c973] border-[0.6px] border-[#05c16880] text-[12px] px-2 py-[2px] rounded-[3px]">
+                          <div className="w-1.5 h-1.5 bg-[#05c168] rounded-full" />
+                          {row.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <Button variant="ghost" size="icon" className="p-[3px]">
+                            <PencilIcon className="w-[16px] h-[16px]" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="p-[3px]">
+                            <Trash2Icon className="w-[16px] h-[16px]" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="p-[3px]">
+                            <EyeIcon className="w-[16px] h-[16px]" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-6 px-1">
+              <span className="text-[12px] text-[#000000a6]">
+                1—10 of {tableData.length}
+              </span>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-auto px-3 py-1.5 rounded-[3px] border border-[#00000033] text-[12px]"
+                >
+                  Previous
+                </Button>
+                <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e] text-white text-[12px]">
+                  1
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto px-3 py-1.5 rounded-[3px] border border-[#00000033] text-[12px]"
+                >
+                  2
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto px-3 py-1.5 rounded-[3px] border border-[#00000033] text-[12px]"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
