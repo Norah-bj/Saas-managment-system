@@ -156,7 +156,28 @@ export const CHWManagement = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-4 gap-3 mb-4"> {/* Reduced gap-4 to gap-3, mb-6 to mb-4 */}
+          {statsData.map((stat, index) => (
+            <Card
+              key={index}
+              className="rounded-[5px] shadow-[1px_1px_6px_#10193466]"
+            >
+              <CardContent className="p-4"> {/* Reduced p-6 to p-4 */}
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm [text-shadow:1px_-1px_4px_#00000040] mb-3"> {/* Reduced text-base to text-sm, mb-4 to mb-3 */}
+                  {stat.title}
+                </div>
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl [text-shadow:1px_-1px_4px_#00000040] mb-1.5"> {/* Reduced text-2xl to text-xl, mb-2 to mb-1.5 */}
+                  {stat.value}
+                </div>
+                <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[12px] [text-shadow:1px_-1px_4px_#00000040]"> {/* Reduced text-[13px] to text-[12px] */}
+                  {stat.change}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* < className="grid grid-cols-3 gap-4 mb-6">
           {statsData.slice(0, 3).map((stat, index) => (
             <Card
               key={index}
@@ -191,7 +212,6 @@ export const CHWManagement = () => {
               </div>
             </CardContent>
           </Card> */}
-        </div>
 
         <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
           <CardContent className="p-6">

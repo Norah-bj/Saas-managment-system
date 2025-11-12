@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const navigationItems = [
-  { label: "Dashboard", icon: "/vector-7.svg", path: "/" },
+  { label: "Dashboard", icon: "/vector-1.svg", path: "/" },
   { label: "User management", icon: "/frame-1261155312.svg", path: "/user-management" },
   { label: "CHW management", icon: "/frame-1261155312.svg", path: "/chw-management" },
   { label: "Emergency & Alerts", icon: "/frame-1261155311.svg", path: "/emergency-alerts" },

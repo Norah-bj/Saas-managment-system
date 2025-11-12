@@ -216,7 +216,7 @@ export const EmergencyAlerts = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-4 gap-3 mb-4"> {/* Reduced gap-4 → gap-3, mb-6 → mb-4 */}
           {statsData.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
@@ -224,26 +224,27 @@ export const EmergencyAlerts = () => {
                 key={index}
                 className="rounded-[5px] shadow-[1px_1px_6px_#10193466]"
               >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
+                <CardContent className="p-4"> {/* Reduced p-6 → p-4 */}
+                  <div className="flex items-start justify-between mb-3"> {/* Reduced mb-4 → mb-3 */}
                     <div>
-                      <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-2">
+                      <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm [text-shadow:1px_-1px_4px_#00000040] mb-2"> {/* text-base → text-sm */}
                         {stat.title}
                       </div>
-                      <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-2xl mb-1">
+                      <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl [text-shadow:1px_-1px_4px_#00000040] mb-1.5"> {/* text-2xl → text-xl */}
                         {stat.value}
                       </div>
-                      <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[13px]">
+                      <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[12px] [text-shadow:1px_-1px_4px_#00000040]"> {/* text-[13px] → text-[12px] */}
                         {stat.change}
                       </div>
                     </div>
-                    <IconComponent className="w-8 h-8 text-gray-400" />
+                    <IconComponent className="w-7 h-7 text-gray-400" /> {/* Slightly reduced from w-8 h-8 */}
                   </div>
                 </CardContent>
               </Card>
             );
           })}
         </div>
+
 
         {/* Alerts + Map */}
         <div className="grid grid-cols-2 gap-4 mb-6">

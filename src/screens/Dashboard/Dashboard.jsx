@@ -30,6 +30,33 @@ import {
   TableRow,
 } from "../../components/Table";
 
+const statsData = [
+  {
+    title: "Total mothers",
+    value: "1,287",
+    change: "+45 this week",
+    icon: UsersIcon,
+  },
+  {
+    title: "Active pregnancies",
+    value: "1,287",
+    change: "+45 this week",
+    icon: TrendingUp,
+  },
+  {
+    title: "Total children",
+    value: "1,287",
+    change: "+45 this week",
+    icon: UsersIcon,
+  },
+  {
+    title: "ANC Appointments",
+    value: "89",
+    change: "Next 7 days",
+    icon: BarChart3Icon,
+  },
+];
+
 const chartData = [
   { name: "Nyagatare", Emergencies: 18 },
   { name: "Huye", Emergencies: 14 },
@@ -130,7 +157,27 @@ export const Dashboard = () => {
             View all analytics and manage the system
           </p>
         </div>
-        <div className="grid grid-cols-4 gap-3 mb-4">
+        <div className="grid grid-cols-4 gap-3 mb-4"> {/* Reduced gap-4 to gap-3, mb-6 to mb-4 */}
+          {statsData.map((stat, index) => (
+            <Card
+              key={index}
+              className="rounded-[5px] shadow-[1px_1px_6px_#10193466]"
+            >
+              <CardContent className="p-4"> {/* Reduced p-6 to p-4 */}
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm [text-shadow:1px_-1px_4px_#00000040] mb-3"> {/* Reduced text-base to text-sm, mb-4 to mb-3 */}
+                  {stat.title}
+                </div>
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl [text-shadow:1px_-1px_4px_#00000040] mb-1.5"> {/* Reduced text-2xl to text-xl, mb-2 to mb-1.5 */}
+                  {stat.value}
+                </div>
+                <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[12px] [text-shadow:1px_-1px_4px_#00000040]"> {/* Reduced text-[13px] to text-[12px] */}
+                  {stat.change}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {/* <div className="grid grid-cols-4 gap-3 mb-4">
           <Card className="rounded-[5px] shadow-[1px_1px_6px_#10193466]">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
@@ -203,7 +250,7 @@ export const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
         <div className="grid grid-cols-[2fr_1fr] gap-4 mb-4">
           <Card className="rounded-[3px] border-[0.5px] border-[#0000004c] shadow-[1px_6px_6px_#00000040]">
             <CardContent className="p-4">

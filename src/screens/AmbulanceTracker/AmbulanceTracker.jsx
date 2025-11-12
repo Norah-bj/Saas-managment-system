@@ -148,29 +148,30 @@ export const AmbulanceTracker = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-4 gap-3 mb-4"> {/* gap-4 → gap-3, mb-6 → mb-4 */}
           {statsData.map((stat, index) => (
             <Card
               key={index}
               className="rounded-[5px] shadow-[1px_1px_6px_#10193466]"
             >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base">
+              <CardContent className="p-4"> {/* p-6 → p-4 */}
+                <div className="flex items-start justify-between mb-3"> {/* mb-4 → mb-3 */}
+                  <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-sm [text-shadow:1px_-1px_4px_#00000040]"> {/* text-base → text-sm */}
                     {stat.title}
                   </div>
-                  <img src={stat.icon} alt="" className="w-[22px] h-[35px]" />
+                  <img src={stat.icon} alt="" className="w-[20px] h-[30px]" /> {/* w-[22px]→20px, h-[35px]→30px */}
                 </div>
-                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-2xl mb-2">
+                <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl [text-shadow:1px_-1px_4px_#00000040] mb-1.5"> {/* text-2xl → text-xl, mb-2 → mb-1.5 */}
                   {stat.value}
                 </div>
-                <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[13px]">
+                <div className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[12px] [text-shadow:1px_-1px_4px_#00000040]"> {/* text-[13px] → text-[12px] */}
                   {stat.change}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+
 
         {/* Map + Pie Chart */}
         <div className="grid grid-cols-[1fr_400px] gap-6 mb-6">
