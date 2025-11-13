@@ -33,18 +33,18 @@ export const Notifications = () => {
   };
 
   return (
-    <div className="space-y-[60px]">
+    <div className="space-y-[30px]">
       {/* Notifications & Alerts */}
       <div>
         <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
           Notifications & Alerts
         </h2>
-        <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm mb-8">
+        <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm mb-6">
           Control user permissions and administrative hierarchies
         </p>
 
         <Card className="rounded-xl border border-[#0000008c] shadow p-10">
-          <div className="flex flex-col gap-[60px]">
+          <div className="flex flex-col gap-[30px]">
             {/* SMS reminders */}
             <div>
               <div className="flex items-start justify-between mb-3">
@@ -61,7 +61,7 @@ export const Notifications = () => {
                   onCheckedChange={setSmsReminders}
                 />
               </div>
-              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+              <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
             </div>
 
             {/* Reminder schedules */}
@@ -87,7 +87,7 @@ export const Notifications = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+              <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
             </div>
 
             {/* Email notifications */}
@@ -106,7 +106,7 @@ export const Notifications = () => {
                   onCheckedChange={setEmailNotifications}
                 />
               </div>
-              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+              <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
             </div>
 
             {/* In-App notifications */}

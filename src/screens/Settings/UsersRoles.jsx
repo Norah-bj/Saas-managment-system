@@ -25,7 +25,7 @@ export const UsersRoles = () => {
       </p>
 
       <Card className="rounded-xl border border-[#0000008c] shadow p-10">
-        <div className="flex flex-col gap-[60px]">
+        <div className="flex flex-col gap-[30px]">
           {/* CHW Assignment */}
           <div>
             <div className="flex items-start justify-between mb-3">
@@ -42,7 +42,7 @@ export const UsersRoles = () => {
                 onCheckedChange={setChwAssignment}
               />
             </div>
-            <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+            <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
           </div>
 
           {/* Account creation approval flow */}
@@ -61,7 +61,7 @@ export const UsersRoles = () => {
                 onCheckedChange={setAccountApproval}
               />
             </div>
-            <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+            <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
           </div>
 
           {/* Two-step verification */}
@@ -80,7 +80,7 @@ export const UsersRoles = () => {
                 onCheckedChange={setTwoStepVerification}
               />
             </div>
-            <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+            <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
           </div>
 
           {/* Inactive account */}

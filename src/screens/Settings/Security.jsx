@@ -32,7 +32,7 @@ export const Security = () => {
             Safeguards for sensitive user information and compliance
           </p>
 
-          <div className="flex flex-col gap-[60px]">
+          <div className="flex flex-col gap-[30px]">
             {/* Data Encryption */}
             <div>
               <div className="flex items-start justify-between mb-3">
@@ -46,7 +46,7 @@ export const Security = () => {
                 </div>
                 <ChevronDown className="w-5 h-5 text-gray-400" />
               </div>
-              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+              <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
             </div>
 
             {/* GDPR/MOH Compliance */}
@@ -65,7 +65,7 @@ export const Security = () => {
                   onCheckedChange={setGdprCompliance}
                 />
               </div>
-              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+              <div className="h-0 border-t border-[#0000001a] mt-[30px]" />
             </div>
 
             {/* Data Retention Policy */}
