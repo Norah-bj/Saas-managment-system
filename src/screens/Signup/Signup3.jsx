@@ -12,6 +12,9 @@ import {
 } from "../../components/Select";
 import { WelcomePanel } from "../../components/WelcomePanel";
 import { AuthBackground } from "../../components/AuthBackground";
+import { useCreateAdminMutation } from "../../redux/api/adminSlice";
+import { setCredentials } from "../../redux/features/authSlice";
+import { toast } from "react-toastify";
 
 export const Signup3 = () => {
   const navigate = useNavigate();
@@ -23,6 +26,8 @@ export const Signup3 = () => {
     numberOfAmbulances: "",
   });
 
+  const [signup] = useCreateAdminMutation();
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -30,9 +35,23 @@ export const Signup3 = () => {
     }));
   };
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
+    try {
+      const res = await register({
+      dhis2Code: formData.dhis2Code,
+      ambulanceDispatch: formData.ambulanceDispatch,
+      emergencyPhone: formData.emergencyPhone,
+      phoneNumber: formData.phoneNumber,
+      numberOfAmbulances: formData.numberOfAmbulances,
+    }).unwrap();
+    setCredentials({user:res.user,access_token:res.access_token});
+    
     // TODO: Handle final signup submission
     navigate("/");
+    } catch (error) {
+      console.log(error);
+      toast.error("failed to signup");
+    }
   };
 
   return (
