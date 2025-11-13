@@ -297,7 +297,7 @@ export const CHWManagement = () => {
             />
           </div>
           <Button className="h-[38px] bg-[#001240] rounded-[0px_5px_5px_0px]">
-            <MenuIcon className="w-4 h-4" />
+            <SearchIcon className="w-4 h-4" />
           </Button>
         </div>
 
