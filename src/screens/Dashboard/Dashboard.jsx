@@ -58,17 +58,19 @@ const statsData = [
 ];
 
 const emergencyChartData = [
-  { name: "Nyagatare", Emergencies: 18 },
-  { name: "Huye", Emergencies: 14 },
-  { name: "Ruhango", Emergencies: 12 },
-  { name: "Muhanga", Emergencies: 10 },
+  { name: "Mukamira", Emergencies: 18 },
+  { name: "Shyira", Emergencies: 14 },
+  { name: "Rambura", Emergencies: 7 },
+  { name: "Bigogwe", Emergencies: 10 },
+  { name: "Other", Emergencies: 8 },
 ];
 
 const ancChartData = [
-  { name: "Nyagatare", ANC: 24 },
-  { name: "Huye", ANC: 20 },
-  { name: "Ruhango", ANC: 16 },
-  { name: "Muhanga", ANC: 14 },
+  { name: "Mukamira", ANC: 23 },
+  { name: "Shyira", ANC: 20 },
+  { name: "Rambura", ANC: 16 },
+  { name: "Bigogwe", ANC: 20 },
+  { name: "Other", ANC: 7 },
 ];
 
 const recentEmergencies = [
@@ -138,7 +140,7 @@ export const Dashboard = () => {
 
   const chartConfig = selectedMetric === "emergencies"
     ? { data: emergencyChartData, dataKey: "Emergencies", barColor: "#0066FF" }
-    : { data: ancChartData, dataKey: "ANC", barColor: "#09111e" };
+    : { data: ancChartData, dataKey: "ANC", barColor: "#0066FF" };
 
   return (
     <div className="flex-1 flex flex-col">
