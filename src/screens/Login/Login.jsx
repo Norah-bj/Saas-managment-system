@@ -47,7 +47,7 @@ export const Login = () => {
 
   return (
     <AuthBackground>
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mx-auto">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 items-stretch mx-auto">
         {/* Left - Welcome Panel */}
         <div className="hidden lg:flex items-stretch">
           <WelcomePanel className="h-full" />
