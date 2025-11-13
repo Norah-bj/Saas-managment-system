@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const Select = ({ children, value, onValueChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value || "");
+
+  useEffect(() => {
+    setSelectedValue(value || "");
+  }, [value]);
 
   const handleSelect = (val) => {
     setSelectedValue(val);

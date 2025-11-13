@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const navigationItems = [
   { label: "Dashboard", icon: "/vector-1.svg", path: "/" },
@@ -15,6 +16,12 @@ const navigationItems = [
 export const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="flex min-h-screen bg-[#ffffff]">
@@ -76,7 +83,10 @@ export const Layout = ({ children }) => {
 
         {/* Logout */}
         <div className="p-3 mt-auto">
-          <button className="w-full text-left px-3 py-2 [font-family:'Poppins',Helvetica] font-semibold text-white text-sm flex items-center gap-2 hover:bg-white/10 transition">
+          <button
+            onClick={handleLogout}
+            className="w-full text-left px-3 py-2 [font-family:'Poppins',Helvetica] font-semibold text-white text-sm flex items-center gap-2 hover:bg-white/10 transition"
+          >
             <img src="/logout.svg" alt="Logout" className="w-[16px] h-[16px] invert" />
             Logout
           </button>
