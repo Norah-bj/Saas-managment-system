@@ -84,7 +84,7 @@ export const Signup3 = () => {
               </label>
               <Select value={formData.ambulanceDispatch} onValueChange={(value) => handleInputChange("ambulanceDispatch", value)}>
                 <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
-                  <SelectValue placeholder="Enter ambulance number" />
+                  <SelectValue placeholder="Enter number" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="amb1">AMB-001</SelectItem>
@@ -99,7 +99,7 @@ export const Signup3 = () => {
               </label>
               <Select value={formData.numberOfAmbulances} onValueChange={(value) => handleInputChange("numberOfAmbulances", value)}>
                 <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
-                  <SelectValue placeholder="Select number of ambulances" />
+                  <SelectValue placeholder="Select number" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">1</SelectItem>
