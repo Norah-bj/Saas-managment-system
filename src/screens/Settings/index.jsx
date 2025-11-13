@@ -104,7 +104,7 @@ export const Settings = () => {
         {/* Settings Content */}
         <div className="flex gap-[1.5px] bg-white rounded-[10px] shadow-[6px_0px_6px_6px_#00000040] min-h-[600px]">
           {/* Left Settings Menu */}
-          <aside className="w-[270px] flex flex-col gap-[10px] pt-[20px] px-4 border-r border-[#0000001a]">
+          <aside className="w-[270px] flex flex-col pt-[20px] px-4 border-r border-[#0000001a]">
             {settingsMenuItems.map((item) => {
               const IconComponent = item.icon;
               const isActive = activeTab === item.id;
