@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BellIcon,
   DownloadIcon,
@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/Table";
+import { Pagination } from "../../components/Pagination";
 
 const statsData = [
   {
@@ -89,6 +90,54 @@ const userData = [
     insurance: "Private",
     healthStatus: "SICK",
   },
+  {
+    userId: "AME-100319",
+    fullName: "Habimana Eric",
+    nationalId: "+250799999999",
+    cell: "Remera",
+    insurance: "Mutuelle",
+    healthStatus: "CLEAN",
+  },
+  {
+    userId: "AME-100320",
+    fullName: "Umutoni Grace",
+    nationalId: "+250744444444",
+    cell: "Kimironko",
+    insurance: "RSSB",
+    healthStatus: "SICK",
+  },
+  {
+    userId: "AME-100321",
+    fullName: "Nyirabagenzi Lea",
+    nationalId: "+250755555555",
+    cell: "Rusororo",
+    insurance: "Mutuelle",
+    healthStatus: "CLEAN",
+  },
+  {
+    userId: "AME-100322",
+    fullName: "Gasana Patrick",
+    nationalId: "+250766666666",
+    cell: "Ndera",
+    insurance: "Private",
+    healthStatus: "SICK",
+  },
+  {
+    userId: "AME-100323",
+    fullName: "Mukandayisenga Olive",
+    nationalId: "+250777777777",
+    cell: "Kabeza",
+    insurance: "RSSB",
+    healthStatus: "CLEAN",
+  },
+  {
+    userId: "AME-100324",
+    fullName: "Twagirayezu Bosco",
+    nationalId: "+250788888888",
+    cell: "Gikondo",
+    insurance: "Mutuelle",
+    healthStatus: "SICK",
+  },
 ];
 
 export const UserManagement = () => {
@@ -107,6 +156,8 @@ export const UserManagement = () => {
     insurance: "",
     healthStatus: "",
   });
+  const pageSize = 6;
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredUsers = userData.filter((user) => {
     const matchesSearch =
@@ -124,6 +175,26 @@ export const UserManagement = () => {
 
     return matchesSearch && matchesStatus && matchesLocation;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startIndex = filteredUsers.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, filteredUsers.length);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, locationFilter]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
+  }, [totalPages]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleViewDetails = (user) => {
     setSelectedUser(user);
@@ -368,100 +439,83 @@ export const UserManagement = () => {
                 </TableHeader>
 
                 <TableBody>
-                  {filteredUsers.map((user) => (
-                    <TableRow key={user.userId} className="text-sm"> {/* smaller font for rows */}
-                      <TableCell className="px-2 py-1">
-                        <Checkbox />
-                      </TableCell>
-                      <TableCell className="px-2 py-1">{user.userId}</TableCell>
-                      <TableCell className="px-2 py-1">{user.fullName}</TableCell>
-                      <TableCell className="px-2 py-1">{user.nationalId}</TableCell>
-                      <TableCell className="px-2 py-1">{user.cell}</TableCell>
-                      <TableCell className="px-2 py-1">{user.insurance}</TableCell>
-                      <TableCell className="px-2 py-1">
-                        <Badge
-                          variant="secondary"
-                          className={`${
-                            user.healthStatus === "SICK"
-                              ? "bg-[#fde7e7] text-[#b00000]"
-                              : "bg-[#d7f7e7] text-[#006633]"
-                          } rounded-[3px] font-normal text-[10px] px-2 py-0.5`} 
-                        >
-                          {user.healthStatus}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-2 py-1">
-                        <div className="flex items-center gap-1"> {/* slightly tighter buttons */}
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6"
-                            onClick={() => handleEditUser(user)}
-                          >
-                            <PencilIcon className="w-3 h-3" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6"
-                            onClick={() => handleViewDetails(user)}
-                          >
-                            <EyeIcon className="w-3 h-3" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6"
-                            onClick={() => handleDeleteUser(user)}
-                          >
-                            <Trash2Icon className="w-3 h-3" />
-                          </Button>
-                        </div>
+                  {paginatedUsers.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-6 text-sm text-[#000000a6]">
+                        No users match the selected filters.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    paginatedUsers.map((user) => (
+                      <TableRow key={user.userId} className="text-sm"> {/* smaller font for rows */}
+                        <TableCell className="px-2 py-1">
+                          <Checkbox />
+                        </TableCell>
+                        <TableCell className="px-2 py-1">{user.userId}</TableCell>
+                        <TableCell className="px-2 py-1">{user.fullName}</TableCell>
+                        <TableCell className="px-2 py-1">{user.nationalId}</TableCell>
+                        <TableCell className="px-2 py-1">{user.cell}</TableCell>
+                        <TableCell className="px-2 py-1">{user.insurance}</TableCell>
+                        <TableCell className="px-2 py-1">
+                          <Badge
+                            variant="secondary"
+                            className={`${
+                              user.healthStatus === "SICK"
+                                ? "bg-[#fde7e7] text-[#b00000]"
+                                : "bg-[#d7f7e7] text-[#006633]"
+                            } rounded-[3px] font-normal text-[10px] px-2 py-0.5`}
+                          >
+                            {user.healthStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="px-2 py-1">
+                          <div className="flex items-center gap-1"> {/* slightly tighter buttons */}
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6"
+                              onClick={() => handleEditUser(user)}
+                            >
+                              <PencilIcon className="w-3 h-3" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6"
+                              onClick={() => handleViewDetails(user)}
+                            >
+                              <EyeIcon className="w-3 h-3" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6"
+                              onClick={() => handleDeleteUser(user)}
+                            >
+                              <Trash2Icon className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>
 
             {/* Pagination */}
             <div className="flex items-center justify-between mt-6">
-              <Button
-                variant="outline"
-                className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c]"
-              >
-                <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                  Previous
-                </span>
-              </Button>
+              <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                {filteredUsers.length === 0
+                  ? "0 results"
+                  : `${startIndex}-${endIndex} of ${filteredUsers.length}`}
+              </span>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
-                    1
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    2
-                  </span>
-                </Button>
-              </div>
-
-              <Button
-                variant="outline"
-                className="h-auto px-4 py-2 rounded-[3px] border border-[#0000004c]"
-              >
-                <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                  Next
-                </span>
-              </Button>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </CardContent>
         </Card>
