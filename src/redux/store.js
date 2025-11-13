@@ -8,6 +8,8 @@ export const store = configureStore({
     nav: navReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
+
+  
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),
   devTools: true,

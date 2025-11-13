@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./screens/Dashboard";
 import { AmbulanceTracker } from "./screens/AmbulanceTracker";
@@ -13,42 +13,43 @@ import { Login } from "./screens/Login";
 import { Signup1, Signup2, Signup3 } from "./screens/Signup";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/PrivateRoute";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
-function App() {
-  return (
+const router = createBrowserRouter([
+  // Auth routes
+  { path: "/login", element: <Login /> },
+  { path: "/signup-1", element: <Signup1 /> },
+  { path: "/signup-2", element: <Signup2 /> },
+  { path: "/signup-3", element: <Signup3 /> },
+
+  // Protected routes with Layout
+  {
+    path: "/",
+    element: (
+      <PrivateRoute>
+        <Layout />
+      </PrivateRoute>
+    ),
+    children: [
+      { path: "/", element: <Dashboard /> },
+      { path: "ambulance-tracker", element: <AmbulanceTracker /> },
+      { path: "reports-analytics", element: <ReportsAnalytics /> },
+      { path: "user-management", element: <UserManagement /> },
+      { path: "chw-management", element: <CHWManagement /> },
+      { path: "emergency-alerts", element: <EmergencyAlerts /> },
+      { path: "appointments", element: <Appointments /> },
+      { path: "settings", element: <Settings /> },
+    ],
+  },
+]);
+
+const App = () => (
+  <Provider store={store}>
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Auth routes without Layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup-1" element={<Signup1 />} />
-          <Route path="/signup-2" element={<Signup2 />} />
-          <Route path="/signup-3" element={<Signup3 />} />
-
-          {/* Protected routes with Layout */}
-          <Route
-            path="/*"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/ambulance-tracker" element={<AmbulanceTracker />} />
-                    <Route path="/reports-analytics" element={<ReportsAnalytics />} />
-                    <Route path="/user-management" element={<UserManagement />} />
-                    <Route path="/chw-management" element={<CHWManagement />} />
-                    <Route path="/emergency-alerts" element={<EmergencyAlerts />} />
-                    <Route path="/appointments" element={<Appointments />} />
-                    <Route path="/settings" element={<Settings />} />
-                  </Routes>
-                </Layout>
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
-}
+    <RouterProvider router={router} />
+  </AuthProvider>
+  </Provider>
+);
 
 export default App;

@@ -13,17 +13,23 @@ import {
 import { WelcomePanel } from "../../components/WelcomePanel";
 import { AuthBackground } from "../../components/AuthBackground";
 import { useAuth } from "../../context/AuthContext";
+import { useAdminLoginMutation } from "../../redux/api/adminSlice";
+import { toast } from "react-toastify";
+import { setCredentials } from "../../redux/features/authSlice";
 
 export const Login = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState();
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isAuthenticated } = useAuth();
+  // const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     role: "",
     rememberMe: false,
   });
+
+  const [login, isLoading]=useAdminLoginMutation();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -38,12 +44,21 @@ export const Login = () => {
     }));
   };
 
-  const handleLogin = () => {
-    // Simulate auth success. Replace with real API call as needed.
-    login();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      // Simulate auth success. Replace with real API call as needed.
+    const res = await login({email:formData.email,password:formData.password, fullName: formData.role}).unwrap();
+    setCredentials({user:res.user,access_token:res.access_token});
+    setIsAuthenticated(true);
     const redirectPath = location.state?.from?.pathname || "/";
     navigate(redirectPath, { replace: true });
+    } catch (error) {
+     console.log(error);
+     toast.error("failed login");
+    }
   };
+
 
   return (
     <AuthBackground>
@@ -54,12 +69,24 @@ export const Login = () => {
         </div>
 
         {/* Right - Login Form */}
-        <div className="bg-white rounded-lg shadow-2xl p-8 mx-auto w-full max-w-[520px] flex flex-col space-y-6">
+        <form action="" onSubmit={handleLogin}> 
+          <div className="bg-white rounded-lg shadow-2xl p-8 mx-auto w-full max-w-[520px] flex flex-col space-y-6">
           <h1 className="[font-family:'Poppins',Helvetica] font-bold text-[#001240] text-2xl mb-6">
             Login to Mother Link!
           </h1>
 
           <div className="space-y-4 mb-6">
+            <div>
+              <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-2">
+                FullName
+              </label>
+              <input 
+                className="h-[45px] w-full focus:border-[#001240] rounded-lg border px-3 border-[#0000004c] [font-family:'Poppins',Helvetica]"
+                type="text"  
+                value={formData.role}
+                onValueChange={(value) => handleInputChange("role", value)}
+                placeholder="Your full name"/>
+            </div>
             <div>
               <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-2">
                 Email Address
@@ -86,21 +113,6 @@ export const Login = () => {
               />
             </div>
 
-            <div>
-              <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-2">
-                Role
-              </label>
-              <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
-                <SelectTrigger className="h-[45px] rounded-lg border border-[#0000004c]">
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="chw">CHW</SelectItem>
-                  <SelectItem value="hospital">Hospital Staff</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="flex items-center justify-between mb-6">
@@ -122,10 +134,10 @@ export const Login = () => {
 
           <div className="flex gap-3 mb-6">
             <Button
-              onClick={handleLogin}
+              type="submit"
               className="flex-1 bg-[#001240] text-white hover:bg-[#001240]/90 h-[45px] rounded-lg [font-family:'Poppins',Helvetica] font-medium"
             >
-              Login
+              {isLoading ? "Login" : "loging in"}
             </Button>
             <Button
               onClick={() => navigate("/signup-1")}
@@ -136,6 +148,7 @@ export const Login = () => {
             </Button>
           </div>
         </div>
+        </form>
       </div>
     </AuthBackground>
   );
