@@ -1,206 +1,180 @@
-import React from "react";
+import React, { useState } from "react";
+import { Card, CardContent } from "../../components/Card";
+import { Switch } from "../../components/Switch";
+import { Badge } from "../../components/Badge";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
+import { X, Plus, ChevronDown } from "lucide-react";
 import {
-  BellIcon,
-  ChevronDownIcon,
-  PlusIcon,
-  SearchIcon,
-  XIcon,
-} from "lucide-react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../components/ui/avatar";
-import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Switch } from "../../components/ui/switch";
-import { Layout } from "../../layout/Layout"; // ✅ Import your sidebar layout
-
-const settingsMenuItems = [
-  { label: "General information", icon: "/vector-3.svg" },
-  { label: "User & Roles", icon: "/vector-5.svg" },
-  { label: "Notifications", icon: "/vector-4.svg", active: true },
-  { label: "Security", icon: "/vector-2.svg" },
-  { label: "Appearance", icon: "/vector-9.svg" },
-];
-
-const notificationSettings = [
-  {
-    title: "SMS reminders",
-    description: "Automatic messages for appointments and followups",
-    enabled: true,
-    type: "toggle",
-  },
-  {
-    title: "Reminder schedules",
-    description: "Time before appointment to send reminder",
-    enabled: false,
-    type: "select",
-  },
-  {
-    title: "Email notifications",
-    description: "Extra login for administrative accounts",
-    enabled: true,
-    type: "toggle",
-  },
-  {
-    title: "In-App Notifications",
-    description: "Pop-up alerts for CHWs and administrators",
-    enabled: true,
-    type: "toggle",
-  },
-];
-
-const dangerKeywords = [
-  { id: 1, label: "bleeding" },
-  { id: 2, label: "fever" },
-  { id: 3, label: "dizziness" },
-  { id: 4, label: "headache" },
-];
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/Select";
 
 export const Notifications = () => {
+  const [smsReminders, setSmsReminders] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [inAppNotifications, setInAppNotifications] = useState(true);
+  const [reminderSchedule, setReminderSchedule] = useState("");
+  const [keywords, setKeywords] = useState(["Bleeding", "Fever", "Diarrhea", "Headache"]);
+  const [newKeyword, setNewKeyword] = useState("");
+
+  const handleRemoveKeyword = (keywordToRemove) => {
+    setKeywords(keywords.filter((k) => k !== keywordToRemove));
+  };
+
+  const handleAddKeyword = () => {
+    if (newKeyword.trim() && !keywords.includes(newKeyword.trim())) {
+      setKeywords([...keywords, newKeyword.trim()]);
+      setNewKeyword("");
+    }
+  };
+
   return (
-    <Layout>
-      <div className="bg-white w-full">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-[27px]">
-          <div>
-            <h1 className="font-semibold text-black text-2xl mb-[10px]">
-              Profile settings
-            </h1>
-            <p className="text-black text-sm">
-              Manage system rules, roles, and configurations across hospitals
-              and CHWs
-            </p>
-          </div>
+    <div className="space-y-[60px]">
+      {/* Notifications & Alerts */}
+      <div>
+        <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+          Notifications & Alerts
+        </h2>
+        <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm mb-8">
+          Control user permissions and administrative hierarchies
+        </p>
 
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              className="w-40 h-10 rounded-[3px] border border-[#0000004c] font-medium text-black text-sm"
-            >
-              Save changes
-            </Button>
-            <Button className="w-40 h-10 bg-[#001240] hover:bg-[#001240]/90 text-white text-xs rounded-sm">
-              <PlusIcon className="w-6 h-6 mr-1" />
-              Restore default
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex gap-[1.5px] bg-white rounded-[10px] shadow-[6px_0px_6px_6px_#00000040] min-h-[800px]">
-          {/* Left Settings Menu */}
-          <aside className="w-[270px] flex flex-col gap-[59px] pt-[81px] px-[16px] border-r border-[#0000001a]">
-            {settingsMenuItems.map((item, index) => (
-              <div
-                key={index}
-                className={`flex items-center gap-[37px] px-[20px] py-[18px] rounded-[5px] ${
-                  item.active ? "bg-[#0b1739]" : ""
-                }`}
-              >
-                <img
-                  className="w-[18px] h-[18px]"
-                  alt={item.label}
-                  src={item.icon}
-                />
-                <span
-                  className={`font-normal text-base ${
-                    item.active ? "text-white" : "text-black"
-                  }`}
-                >
-                  {item.label}
-                </span>
-              </div>
-            ))}
-          </aside>
-
-          {/* Right Content Section */}
-          <section className="flex-1 pt-[81px] px-[40px]">
-            {/* Notification Settings */}
-            <div className="mb-[60px]">
-              <h2 className="font-semibold text-black text-base mb-[18px]">
-                Notifications & Alerts
-              </h2>
-              <p className="text-black text-sm mb-[30px]">
-                Control user permissions and administrative hierarchies
-              </p>
-
-              <div className="rounded-xl border border-[#0000008c] shadow p-[40px]">
-                <div className="flex flex-col gap-[60px]">
-                  {notificationSettings.map((setting, index) => (
-                    <div key={index}>
-                      <div className="flex items-start justify-between mb-[12px]">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-black text-[13px] mb-[8px]">
-                            {setting.title}
-                          </h3>
-                          <p className="text-black text-[13px]">
-                            {setting.description}
-                          </p>
-                        </div>
-                        {setting.type === "toggle" ? (
-                          <div className="flex items-center gap-2">
-                            {index === 0 && (
-                              <Badge className="bg-[#d9d9d9] text-black text-[10px] h-[22px] px-3 rounded-sm">
-                                Default
-                              </Badge>
-                            )}
-                            <Switch
-                              checked={setting.enabled}
-                              className="data-[state=checked]:bg-[#001240]"
-                            />
-                          </div>
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="w-[19px] h-[19px]"
-                          >
-                            <ChevronDownIcon className="w-[19px] h-[19px]" />
-                          </Button>
-                        )}
-                      </div>
-                      {index < notificationSettings.length - 1 && (
-                        <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Danger Sign Keywords */}
+        <Card className="rounded-xl border border-[#0000008c] shadow p-10">
+          <div className="flex flex-col gap-[60px]">
+            {/* SMS reminders */}
             <div>
-              <h2 className="font-semibold text-black text-base mb-[30px]">
-                Danger Sign Keywords
-              </h2>
-
-              <div className="rounded-xl border border-[#0000008c] shadow p-[40px]">
-                <div className="flex flex-wrap gap-[18px] mb-[53px]">
-                  {dangerKeywords.map((keyword) => (
-                    <Badge
-                      key={keyword.id}
-                      className="bg-[#d9d9d9] text-black text-[10px] h-[29px] px-4 rounded-[5px] flex items-center gap-2"
-                    >
-                      {keyword.label}
-                      <XIcon className="w-[9px] h-[9px] cursor-pointer" />
-                    </Badge>
-                  ))}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[13px] mb-2">
+                    SMS reminders
+                  </h3>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[13px]">
+                    Automatic messages for appointments and follow-ups.
+                  </p>
                 </div>
+                <Switch
+                  checked={smsReminders}
+                  onCheckedChange={setSmsReminders}
+                />
+              </div>
+              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+            </div>
 
-                <div className="flex items-center gap-4">
-                  <PlusIcon className="w-[13px] h-[13px]" />
-                  <span className="text-black text-[10px]">Add a new keyword</span>
-                  <Button className="ml-auto bg-[#d9d9d9] text-black text-[10px] h-[22px] px-4 rounded-sm">
-                    Add
-                  </Button>
+            {/* Reminder schedules */}
+            <div>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[13px] mb-2">
+                    Reminder schedules
+                  </h3>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[13px]">
+                    Time before appointment to send reminder.
+                  </p>
                 </div>
+                <Select value={reminderSchedule} onValueChange={setReminderSchedule}>
+                  <SelectTrigger className="w-[130px] h-[35px] rounded-[5px] border border-[#0000004d] text-[13px]">
+                    <SelectValue placeholder="Select time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1 hour">1 hour</SelectItem>
+                    <SelectItem value="2 hours">2 hours</SelectItem>
+                    <SelectItem value="1 day">1 day</SelectItem>
+                    <SelectItem value="2 days">2 days</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+            </div>
+
+            {/* Email notifications */}
+            <div>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[13px] mb-2">
+                    Email notifications
+                  </h3>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[13px]">
+                    Extra login for administrative accounts.
+                  </p>
+                </div>
+                <Switch
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                />
+              </div>
+              <div className="h-0 border-t border-[#0000001a] mt-[60px]" />
+            </div>
+
+            {/* In-App notifications */}
+            <div>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[13px] mb-2">
+                    In-App notifications
+                  </h3>
+                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000] text-[13px]">
+                    Pop-up alerts for CHWs and administrators.
+                  </p>
+                </div>
+                <Switch
+                  checked={inAppNotifications}
+                  onCheckedChange={setInAppNotifications}
+                />
               </div>
             </div>
-          </section>
-        </div>
+          </div>
+        </Card>
       </div>
-    </Layout>
+
+      {/* Danger Sign Keywords */}
+      <div>
+        <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-8">
+          Danger Sign Keywords
+        </h2>
+
+        <Card className="rounded-xl border border-[#0000008c] shadow p-10">
+          <div className="flex flex-wrap gap-4 mb-12">
+            {keywords.map((keyword, index) => (
+              <Badge
+                key={index}
+                className="bg-[#d9d9d9] text-black text-[10px] h-[29px] px-4 rounded-[5px] flex items-center gap-2 [font-family:'Poppins',Helvetica] font-normal"
+              >
+                {keyword}
+                <button
+                  onClick={() => handleRemoveKeyword(keyword)}
+                  className="hover:opacity-70"
+                >
+                  <X className="w-[9px] h-[9px]" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Plus className="w-[13px] h-[13px] text-black" />
+            <span className="[font-family:'Poppins',Helvetica] font-normal text-black text-[10px]">
+              Add a new keyword
+            </span>
+            <Input
+              type="text"
+              value={newKeyword}
+              onChange={(e) => setNewKeyword(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleAddKeyword()}
+              className="flex-1 h-[22px] text-[10px] border border-gray-300 rounded-sm [font-family:'Poppins',Helvetica]"
+            />
+            <Button
+              onClick={handleAddKeyword}
+              className="ml-auto bg-[#d9d9d9] text-black text-[10px] h-[22px] px-4 rounded-sm hover:bg-[#c9c9c9] [font-family:'Poppins',Helvetica]"
+            >
+              Add
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 };

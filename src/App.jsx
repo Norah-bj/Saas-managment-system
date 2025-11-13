@@ -8,6 +8,7 @@ import { UserManagement } from "./screens/UserManagement";
 import { CHWManagement } from "./screens/CHWManagement";
 import { EmergencyAlerts } from "./screens/EmergencyAlerts";
 import { Appointments } from "./screens/Appointments";
+import { Settings } from "./screens/Settings";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
           <Route path="/chw-management" element={<CHWManagement />} />
           <Route path="/emergency-alerts" element={<EmergencyAlerts />} />
           <Route path="/appointments" element={<Appointments />} />
-          <Route path="/settings" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>
     </BrowserRouter>
