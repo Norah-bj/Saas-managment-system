@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/Table";
+import { Pagination } from "../../components/Pagination";
 import { fetchCHWs } from "../../api/chwService";
 
 const statsData = [
@@ -59,17 +60,20 @@ const statsData = [
   },
 ];
 
-const userData = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "johndoe@example.com",
-    phone: "+1 (123) 456-7890",
-    status: "Active",
-    location: "New York",
-  },
-  
-]
+const CHW_FORM_DEFAULT = {
+  full_name: "",
+  email: "",
+  national_id: "",
+  phone_number: "",
+  gender: "",
+  district: "",
+  sector: "",
+  cell: "",
+  village: "",
+  role_type: "",
+  employment_type: "",
+  start_date: "",
+};
 
 export const CHWManagement = () => {
   const [chwData, setChwData] = useState([]);
@@ -81,20 +85,10 @@ export const CHWManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    full_name: "",
-    email: "",
-    national_id: "",
-    phone_number: "",
-    gender: "",
-    district: "",
-    sector: "",
-    cell: "",
-    village: "",
-    role_type: "",
-    employment_type: "",
-    start_date: "",
-  });
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState(CHW_FORM_DEFAULT);
+  const pageSize = 6;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     loadCHWs();
@@ -123,9 +117,40 @@ export const CHWManagement = () => {
     return matchesSearch && matchesStatus && matchesLocation;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const paginatedChws = filteredData.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startIndex = filteredData.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, filteredData.length);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, locationFilter]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
+  }, [totalPages]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const handleViewDetails = (chw) => {
     setSelectedCHW(chw);
     setIsModalOpen(true);
+  };
+
+  const handleOpenCreateModal = () => {
+    setEditFormData(CHW_FORM_DEFAULT);
+    setSelectedCHW(null);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setEditFormData(CHW_FORM_DEFAULT);
   };
 
   const handleCloseModal = () => {
@@ -152,6 +177,15 @@ export const CHWManagement = () => {
     return "";
   };
 
+  const formatDateForDisplay = (dateString) => {
+    if (!dateString) return "";
+    const parsed = new Date(dateString);
+    if (isNaN(parsed.getTime())) return dateString;
+    return parsed
+      .toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" })
+      .replace(/\//g, " - ");
+  };
+
   const handleEditCHW = (chw) => {
     setSelectedCHW(chw);
     // Pre-populate form with CHW data
@@ -176,20 +210,7 @@ export const CHWManagement = () => {
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setSelectedCHW(null);
-    setEditFormData({
-      full_name: "",
-      email: "",
-      national_id: "",
-      phone_number: "",
-      gender: "",
-      district: "",
-      sector: "",
-      cell: "",
-      village: "",
-      role_type: "",
-      employment_type: "",
-      start_date: "",
-    });
+    setEditFormData(CHW_FORM_DEFAULT);
   };
 
   const handleInputChange = (field, value) => {
@@ -199,13 +220,49 @@ export const CHWManagement = () => {
     }));
   };
 
-  const handleSubmitEdit = async (e) => {
+  const handleSubmitEdit = (e) => {
     e.preventDefault();
-    // TODO: Implement API call to update CHW
-    console.log("Updating CHW:", editFormData);
-    // After successful update, refresh the list and close modal
-    await loadCHWs();
+    if (!selectedCHW) return;
+
+    const locationParts = [
+      editFormData.district || selectedCHW.district,
+      editFormData.sector || selectedCHW.sector,
+    ].filter(Boolean);
+
+    const updatedCHW = {
+      ...selectedCHW,
+      ...editFormData,
+      location: locationParts.join(" / ") || selectedCHW.location || "",
+      start_date: editFormData.start_date
+        ? formatDateForDisplay(editFormData.start_date)
+        : selectedCHW.start_date,
+      status: selectedCHW.status || "Active",
+    };
+
+    setChwData((prev) => prev.map((chw) => (chw.id === selectedCHW.id ? updatedCHW : chw)));
+    setSelectedCHW(updatedCHW);
     handleCloseEditModal();
+  };
+
+  const handleSubmitCreate = (e) => {
+    e.preventDefault();
+
+    const locationParts = [editFormData.district, editFormData.sector].filter(Boolean);
+    const startDateDisplay = editFormData.start_date
+      ? formatDateForDisplay(editFormData.start_date)
+      : formatDateForDisplay(new Date().toISOString());
+
+    const newCHW = {
+      id: Date.now(),
+      ...editFormData,
+      location: locationParts.join(" / "),
+      status: "Active",
+      start_date: startDateDisplay,
+    };
+
+    setChwData((prev) => [newCHW, ...prev]);
+    setCurrentPage(1);
+    handleCloseCreateModal();
   };
 
   const handleDeleteCHW = (chw) => {
@@ -272,7 +329,7 @@ export const CHWManagement = () => {
                 Message CHW
               </span>
             </Button> */}
-            <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]">
+            <Button className="h-auto px-4 py-2 rounded-[3px] bg-[#09111e]" onClick={handleOpenCreateModal}>
               <PlusIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
                 Add CHW
@@ -442,7 +499,7 @@ export const CHWManagement = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredData.map((chw, index) => (
+                  paginatedChws.map((chw, index) => (
                     <TableRow key={index} className="text-sm">
                       <TableCell className="px-2 py-1">
                         <Checkbox />
@@ -510,43 +567,15 @@ export const CHWManagement = () => {
 
             <div className="flex items-center justify-between mt-6">
               <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
-                1—10 of {filteredData.length}
-              </span>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    Previous
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
-                    1
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    2
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-sm">
-                    Next
-                  </span>
-                </Button>
-              </div>
+                {filteredData.length === 0
+                  ? "0 results"
+                  : `${startIndex}-${endIndex} of ${filteredData.length}`}
+               </span>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </CardContent>
         </Card>
@@ -657,6 +686,263 @@ export const CHWManagement = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Form Modal */}
+      {isCreateModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseCreateModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseCreateModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Register CHW
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Provide details to onboard a new community health worker
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmitCreate} className="space-y-6">
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Full name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter a full name"
+                      value={editFormData.full_name}
+                      onChange={(e) => handleInputChange("full_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Email<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={editFormData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      National Id<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="16-digit Number"
+                      value={editFormData.national_id}
+                      onChange={(e) => handleInputChange("national_id", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Phone number<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder="+250XXXXXXXXX"
+                      value={editFormData.phone_number}
+                      onChange={(e) => handleInputChange("phone_number", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Gender<span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      value={editFormData.gender}
+                      onValueChange={(value) => handleInputChange("gender", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue
+                          placeholder="select a gender"
+                          className="[font-family:'Poppins',Helvetica] font-normal text-[#000000b0] text-sm"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Area of Operation
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      District<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter district"
+                      value={editFormData.district}
+                      onChange={(e) => handleInputChange("district", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Sector<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter sector"
+                      value={editFormData.sector}
+                      onChange={(e) => handleInputChange("sector", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Cell<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter cell"
+                      value={editFormData.cell}
+                      onChange={(e) => handleInputChange("cell", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Village<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter village"
+                      value={editFormData.village}
+                      onChange={(e) => handleInputChange("village", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Role information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Role type<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter role type"
+                      value={editFormData.role_type}
+                      onChange={(e) => handleInputChange("role_type", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Employment type<span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      value={editFormData.employment_type}
+                      onValueChange={(value) => handleInputChange("employment_type", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue
+                          placeholder="select employment type"
+                          className="[font-family:'Poppins',Helvetica] font-normal text-[#000000b0] text-sm"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Contract">Contract</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                  Start Date
+                </label>
+                <Input
+                  type="date"
+                  value={editFormData.start_date}
+                  onChange={(e) => handleInputChange("start_date", e.target.value)}
+                  className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseCreateModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Cancel
+                  </span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Register CHW
+                  </span>
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}

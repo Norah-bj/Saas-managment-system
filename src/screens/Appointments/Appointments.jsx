@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/Table";
+import { Pagination } from "../../components/Pagination";
 
 const statsData = [
   {
@@ -65,6 +66,16 @@ const appointmentTypes = [
   { name: "Follow-up", color: "#FFA500" },
 ];
 
+const APPOINTMENT_FORM_DEFAULT = {
+  patient_name: "",
+  phone_number: "",
+  appointment_date: "",
+  appointment_time: "",
+  type: "",
+  chw_name: "",
+  status: "Scheduled",
+};
+
 export const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date(2025, 10, 12)); // Updated to November 2025 context
@@ -75,15 +86,10 @@ export const Appointments = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    patient_name: "",
-    phone_number: "",
-    appointment_date: "",
-    appointment_time: "",
-    type: "",
-    chw_name: "",
-    status: "",
-  });
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState(APPOINTMENT_FORM_DEFAULT);
+  const pageSize = 4;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchAppointments();
@@ -216,23 +222,26 @@ export const Appointments = () => {
       appointment_time: appointment.appointment_time || "",
       type: appointment.type || "",
       chw_name: appointment.chw_name || "",
-      status: appointment.status || "",
+      status: appointment.status || "Scheduled",
     });
     setIsEditModalOpen(true);
+  };
+
+  const handleOpenCreateModal = () => {
+    setEditFormData(APPOINTMENT_FORM_DEFAULT);
+    setSelectedAppointment(null);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setEditFormData(APPOINTMENT_FORM_DEFAULT);
   };
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setSelectedAppointment(null);
-    setEditFormData({
-      patient_name: "",
-      phone_number: "",
-      appointment_date: "",
-      appointment_time: "",
-      type: "",
-      chw_name: "",
-      status: "",
-    });
+    setEditFormData(APPOINTMENT_FORM_DEFAULT);
   };
 
   const handleInputChange = (field, value) => {
@@ -242,11 +251,35 @@ export const Appointments = () => {
     }));
   };
 
-  const handleSubmitEdit = async (e) => {
+  const handleSubmitEdit = (e) => {
     e.preventDefault();
-    // TODO: Implement API call to update appointment
-    console.log("Updating appointment:", editFormData);
+    if (!selectedAppointment) return;
+
+    const updatedAppointment = {
+      ...selectedAppointment,
+      ...editFormData,
+    };
+
+    setAppointments((prev) =>
+      prev.map((appointment) =>
+        appointment.id === selectedAppointment.id ? updatedAppointment : appointment
+      )
+    );
+    setSelectedAppointment(updatedAppointment);
     handleCloseEditModal();
+  };
+
+  const handleSubmitCreate = (e) => {
+    e.preventDefault();
+
+    const newAppointment = {
+      id: Date.now(),
+      ...editFormData,
+    };
+
+    setAppointments((prev) => [newAppointment, ...prev]);
+    setCurrentPage(1);
+    handleCloseCreateModal();
   };
 
   const handleDeleteAppointment = (appointment) => {
@@ -265,6 +298,37 @@ export const Appointments = () => {
       console.log("Deleting appointment:", selectedAppointment);
       handleCloseDeleteModal();
     }
+  };
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredAppointments = appointments.filter((appointment) => {
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      appointment.patient_name.toLowerCase().includes(normalizedSearch) ||
+      appointment.phone_number.toLowerCase().includes(normalizedSearch) ||
+      appointment.type.toLowerCase().includes(normalizedSearch);
+    const matchesType = filterType === "all" || appointment.type === filterType;
+    return matchesSearch && matchesType;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredAppointments.length / pageSize));
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startIndex = filteredAppointments.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, filteredAppointments.length);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterType]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
+  }, [totalPages]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const monthName = currentDate.toLocaleString("default", {
@@ -328,12 +392,12 @@ export const Appointments = () => {
                 Export csv
               </span>
             </Button>
-            {/* <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e]"> Reduced py-2 to py-1.5, px-4 to px-3 */}
-              {/* <PlusIcon className="w-4 h-4 mr-1.5" /> Reduced mr-2 to mr-1.5 */}
-              {/* <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-xs"> Reduced text-sm to text-xs */}
-                {/* Add appointment */}
-              {/* </span> */}
-            {/* </Button> */}
+            <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e]" onClick={handleOpenCreateModal}>
+              <PlusIcon className="w-4 h-4 mr-1.5" /> 
+              <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-xs">
+                Add appointment
+              </span>
+            </Button>
           </div>
         </div>
 
@@ -429,15 +493,26 @@ export const Appointments = () => {
                           <div className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-[11px] mb-1.5"> {/* Reduced text-sm to text-[11px], mb-2 to mb-1.5 */}
                             {day}
                           </div>
-                          <div className="space-y-0.5"> {/* Reduced space-y-1 to space-y-0.5 */}
+                          <div className="space-y-1">
                             {getAppointmentsForDay(day).map((apt, idx) => (
-                              <div
-                                key={idx}
-                                className="w-1.5 h-1.5 rounded-full" 
-                                style={{
-                                  backgroundColor: getTypeColor(apt.type),
-                                }}
-                              ></div>
+                              <div key={idx} className="relative group">
+                                <div
+                                  className="w-2 h-2 rounded-full"
+                                  style={{ backgroundColor: getTypeColor(apt.type) }}
+                                ></div>
+                                <div className="absolute left-4 top-1/2 hidden w-48 -translate-y-1/2 group-hover:flex z-20">
+                                  <div className="bg-[#09111e] text-white rounded-md px-3 py-2 shadow-lg">
+                                    <div className="[font-family:'Poppins',Helvetica] font-semibold text-sm mb-1 flex items-center justify-between">
+                                      <span>{apt.type}</span>
+                                      <span className="text-xs text-white/70">{apt.appointment_time}</span>
+                                    </div>
+                                    <div className="[font-family:'Poppins',Helvetica] text-xs text-white/80">
+                                      <div className="mb-1">CHW: {apt.chw_name}</div>
+                                      <div className="capitalize">Status: {(apt.status || "Scheduled").toLowerCase()}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             ))}
                           </div>
                         </>
@@ -569,14 +644,14 @@ export const Appointments = () => {
                       Loading...
                     </TableCell>
                   </TableRow>
-                ) : appointments.length === 0 ? (
+                ) : filteredAppointments.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-6"> {/* Reduced py-8 to py-6 */}
                       No appointments found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  appointments.map((appointment) => (
+                  paginatedAppointments.map((appointment) => (
                     <TableRow key={appointment.id}>
                       <TableCell>
                         <Checkbox />
@@ -652,43 +727,16 @@ export const Appointments = () => {
 
             <div className="flex items-center justify-between mt-4"> {/* Reduced mt-6 to mt-4 */}
               <span className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                1—10 of {appointments.length}
+                {filteredAppointments.length === 0
+                  ? "0 results"
+                  : `${startIndex}-${endIndex} of ${filteredAppointments.length}`}
               </span>
 
-              <div className="flex items-center gap-1.5"> {/* Reduced gap-2 to gap-1.5 */}
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Previous
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c] bg-[#09111e] text-white" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    1
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    2
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-2.5 py-1.5 rounded-[3px] border border-[#0000004c]" 
-                >
-                  <span className="[font-family:'Poppins',Helvetica] font-medium text-[#000000] text-[11px]"> {/* Reduced text-sm to text-[11px] */}
-                    Next
-                  </span>
-                </Button>
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </CardContent>
         </Card>
@@ -795,6 +843,169 @@ export const Appointments = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Appointment Modal */}
+      {isCreateModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-8 pb-8"
+          onClick={handleCloseCreateModal}
+        >
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div
+            className="relative bg-white rounded-lg shadow-xl w-[90%] max-w-[800px] p-6 z-10 my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseCreateModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-6">
+              <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xl mb-1">
+                Add appointment
+              </h2>
+              <p className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm">
+                Capture details for the upcoming visit
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmitCreate} className="space-y-6">
+              <div>
+                <h3 className="[font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-base mb-4">
+                  Appointment details
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Patient Name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter patient name"
+                      value={editFormData.patient_name}
+                      onChange={(e) => handleInputChange("patient_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Phone Number<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder="+250XXXXXXXXX"
+                      value={editFormData.phone_number}
+                      onChange={(e) => handleInputChange("phone_number", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Appointment Date<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="date"
+                      value={editFormData.appointment_date}
+                      onChange={(e) => handleInputChange("appointment_date", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Time<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="time"
+                      value={editFormData.appointment_time}
+                      onChange={(e) => handleInputChange("appointment_time", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Type<span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      value={editFormData.type}
+                      onValueChange={(value) => handleInputChange("type", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue placeholder="select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {appointmentTypes.map((type) => (
+                          <SelectItem key={type.name} value={type.name}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      CHW Name<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter CHW name"
+                      value={editFormData.chw_name}
+                      onChange={(e) => handleInputChange("chw_name", e.target.value)}
+                      className="[font-family:'Poppins',Helvetica] font-normal text-[#000000a6] text-sm h-[38px] rounded-[3px]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block [font-family:'Poppins',Helvetica] font-normal text-[#000000] text-sm mb-1">
+                      Status<span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      value={editFormData.status}
+                      onValueChange={(value) => handleInputChange("status", value)}
+                    >
+                      <SelectTrigger className="h-[38px] rounded-[3px] border border-[#0000004c]">
+                        <SelectValue placeholder="select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Scheduled">Scheduled</SelectItem>
+                        <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Missed">Missed</SelectItem>
+                        <SelectItem value="Cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseCreateModal}
+                  className="h-auto px-6 py-2 rounded-[3px] border border-[#0000004c] bg-white text-[#001240] hover:bg-gray-50"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Cancel
+                  </span>
+                </Button>
+                <Button
+                  type="submit"
+                  className="h-auto px-6 py-2 rounded-[3px] bg-[#001240] text-white hover:bg-[#001240]/90"
+                >
+                  <span className="[font-family:'Poppins',Helvetica] font-medium text-sm">
+                    Save appointment
+                  </span>
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}

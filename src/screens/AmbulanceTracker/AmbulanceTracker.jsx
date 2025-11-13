@@ -12,7 +12,7 @@ import {
   Trash2Icon,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
 import { Card, CardContent } from "../../components/Card";
@@ -33,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/Table";
+import { Pagination } from "../../components/Pagination";
 import {
   PieChart,
   Pie,
@@ -86,6 +87,70 @@ const tableData = [
     maintenanceDate: "01 - 10 -2025",
     status: "Online",
   },
+  {
+    plateNumber: "AMB-00837",
+    driver: "Uwase Claire",
+    currentLocation: "Nyabihu District Hospital",
+    vehicleType: "Gasabo / Kacyiru",
+    maintenanceDate: "12 - 10 -2025",
+    status: "Maintenance",
+  },
+  {
+    plateNumber: "AMB-00838",
+    driver: "Mukiza Samuel",
+    currentLocation: "Huye Teaching Hospital",
+    vehicleType: "Huye / Ngoma",
+    maintenanceDate: "03 - 11 -2025",
+    status: "Offline",
+  },
+  {
+    plateNumber: "AMB-00839",
+    driver: "Ingabire Alice",
+    currentLocation: "Ruhango Health Center",
+    vehicleType: "Ruhango / Byimana",
+    maintenanceDate: "18 - 09 -2025",
+    status: "Online",
+  },
+  {
+    plateNumber: "AMB-00840",
+    driver: "Nkurunziza Eric",
+    currentLocation: "Muhanga Referral",
+    vehicleType: "Muhanga / Nyamabuye",
+    maintenanceDate: "27 - 10 -2025",
+    status: "Online",
+  },
+  {
+    plateNumber: "AMB-00841",
+    driver: "Mukamana Aline",
+    currentLocation: "Musanze District Hospital",
+    vehicleType: "Musanze / Cyuve",
+    maintenanceDate: "14 - 08 -2025",
+    status: "Maintenance",
+  },
+  {
+    plateNumber: "AMB-00842",
+    driver: "Habimana David",
+    currentLocation: "Kicukiro Health Post",
+    vehicleType: "Kicukiro / Kagarama",
+    maintenanceDate: "06 - 09 -2025",
+    status: "Online",
+  },
+  {
+    plateNumber: "AMB-00843",
+    driver: "Nyirabarera Solange",
+    currentLocation: "Rusizi Provincial Hospital",
+    vehicleType: "Rusizi / Kamembe",
+    maintenanceDate: "21 - 11 -2025",
+    status: "Offline",
+  },
+  {
+    plateNumber: "AMB-00844",
+    driver: "Kambanda Bosco",
+    currentLocation: "Gicumbi District",
+    vehicleType: "Gicumbi / Byumba",
+    maintenanceDate: "09 - 10 -2025",
+    status: "Online",
+  },
 ];
 
 const chartData = [
@@ -110,6 +175,24 @@ export const AmbulanceTracker = () => {
     maintenanceDate: "",
     status: "",
   });
+  const pageSize = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(tableData.length / pageSize));
+  const paginatedTableData = tableData.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startIndex = tableData.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, tableData.length);
+
+  useEffect(() => {
+    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
+  }, [totalPages]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleViewDetails = (ambulance) => {
     setSelectedAmbulance(ambulance);
@@ -221,12 +304,12 @@ export const AmbulanceTracker = () => {
                 Export csv
               </span>
             </Button>
-            <Button className="h-auto px-4 py-2 bg-[#001240] rounded-sm">
+            {/* <Button className="h-auto px-4 py-2 bg-[#001240] rounded-sm">
               <PlusIcon className="w-4 h-4 mr-2" />
               <span className="[font-family:'Poppins',Helvetica] font-medium text-white text-sm">
                 Assign cases
               </span>
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -411,7 +494,7 @@ export const AmbulanceTracker = () => {
                 </TableHeader>
 
                 <TableBody>
-                  {tableData.map((row, index) => (
+                  {paginatedTableData.map((row, index) => (
                     <TableRow key={index} className="border-b text-[13px]">
                       <TableCell>
                         <Checkbox />
@@ -464,32 +547,15 @@ export const AmbulanceTracker = () => {
             {/* Pagination */}
             <div className="flex items-center justify-between mt-6 px-1">
               <span className="text-[12px] text-[#000000a6]">
-                1—10 of {tableData.length}
+                {tableData.length === 0
+                  ? "0 results"
+                  : `${startIndex}-${endIndex} of ${tableData.length}`}
               </span>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-1.5 rounded-[3px] border border-[#00000033] text-[12px]"
-                >
-                  Previous
-                </Button>
-                <Button className="h-auto px-3 py-1.5 rounded-[3px] bg-[#09111e] text-white text-[12px]">
-                  1
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-1.5 rounded-[3px] border border-[#00000033] text-[12px]"
-                >
-                  2
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-1.5 rounded-[3px] border border-[#00000033] text-[12px]"
-                >
-                  Next
-                </Button>
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </CardContent>
         </Card>

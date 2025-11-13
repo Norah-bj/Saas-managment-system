@@ -33,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/Table";
+import { Pagination } from "../../components/Pagination";
 
 const statsData = [
   {
@@ -114,6 +115,8 @@ export const EmergencyAlerts = () => {
     maintenance_date: "",
     status: "",
   });
+  const pageSize = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchData();
@@ -134,20 +137,83 @@ export const EmergencyAlerts = () => {
         {
           id: 2,
           alert_id: "AMB-00835",
-          caller_name: "Kalisa John",
-          phone_number: "+250788123456",
-          location: "Kimironko / Biryogo",
-          maintenance_date: "25 - 09 - 2025",
-          status: "Available",
+          caller_name: "Mukamana Elise",
+          phone_number: "+250781234567",
+          location: "Remera / Kabeza",
+          maintenance_date: "21 - 09 - 2025",
+          status: "Urgent",
         },
         {
           id: 3,
           alert_id: "AMB-00837",
-          caller_name: "Kalisa John",
-          phone_number: "+250788123456",
-          location: "Kimironko / Biryogo",
-          maintenance_date: "25 - 09 - 2025",
+          caller_name: "Uwitonze Marie",
+          phone_number: "+250789123456",
+          location: "Gikondo / Merez",
+          maintenance_date: "19 - 09 - 2025",
+          status: "Critical",
+        },
+        {
+          id: 4,
+          alert_id: "AMB-00838",
+          caller_name: "Nshimiyimana Joel",
+          phone_number: "+250780123456",
+          location: "Huye / Ngoma",
+          maintenance_date: "18 - 09 - 2025",
+          status: "Available",
+        },
+        {
+          id: 5,
+          alert_id: "AMB-00839",
+          caller_name: "Ingabire Solange",
+          phone_number: "+250782345678",
+          location: "Musanze / Muhoza",
+          maintenance_date: "17 - 09 - 2025",
+          status: "Moderate",
+        },
+        {
+          id: 6,
+          alert_id: "AMB-00840",
+          caller_name: "Habineza Alexis",
+          phone_number: "+250783456789",
+          location: "Nyagatare / Matimba",
+          maintenance_date: "16 - 09 - 2025",
+          status: "In Transit",
+        },
+        {
+          id: 7,
+          alert_id: "AMB-00841",
+          caller_name: "Dusabe Clarisse",
+          phone_number: "+250784567890",
+          location: "Ruhango / Mbuye",
+          maintenance_date: "15 - 09 - 2025",
           status: "Urgent",
+        },
+        {
+          id: 8,
+          alert_id: "AMB-00842",
+          caller_name: "Kagabo Patrick",
+          phone_number: "+250785678901",
+          location: "Kirehe / Mahama",
+          maintenance_date: "14 - 09 - 2025",
+          status: "Critical",
+        },
+        {
+          id: 9,
+          alert_id: "AMB-00843",
+          caller_name: "Mukakarisa Anne",
+          phone_number: "+250786789012",
+          location: "Rusizi / Kamembe",
+          maintenance_date: "13 - 09 - 2025",
+          status: "Available",
+        },
+        {
+          id: 10,
+          alert_id: "AMB-00844",
+          caller_name: "Uwase Denise",
+          phone_number: "+250787890123",
+          location: "Rubavu / Gisenyi",
+          maintenance_date: "12 - 09 - 2025",
+          status: "Moderate",
         },
       ]);
     } catch (error) {
@@ -240,6 +306,39 @@ export const EmergencyAlerts = () => {
       console.log("Deleting emergency:", selectedEmergency);
       handleCloseDeleteModal();
     }
+  };
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredEmergencies = emergencies.filter((emergency) => {
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      emergency.alert_id.toLowerCase().includes(normalizedSearch) ||
+      emergency.caller_name.toLowerCase().includes(normalizedSearch) ||
+      emergency.phone_number.toLowerCase().includes(normalizedSearch) ||
+      emergency.location.toLowerCase().includes(normalizedSearch);
+    const matchesStatus =
+      statusFilter === "all" || emergency.status.toLowerCase() === statusFilter.toLowerCase();
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredEmergencies.length / pageSize));
+  const paginatedEmergencies = filteredEmergencies.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startIndex = filteredEmergencies.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, filteredEmergencies.length);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
+  }, [totalPages]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -469,14 +568,14 @@ export const EmergencyAlerts = () => {
                       Loading...
                     </TableCell>
                   </TableRow>
-                ) : emergencies.length === 0 ? (
+                ) : filteredEmergencies.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-6 text-[13px]">
                       No emergencies found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  emergencies.map((emergency) => (
+                  paginatedEmergencies.map((emergency) => (
                     <TableRow key={emergency.id} className="text-[13px]">
                       <TableCell>
                         <Checkbox />
@@ -531,32 +630,15 @@ export const EmergencyAlerts = () => {
 
             <div className="flex items-center justify-between mt-4">
               <span className="text-sm text-[#000000a6]">
-                1—10 of {emergencies.length}
-              </span>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  Previous
-                </Button>
-                <Button className="h-auto px-3 py-2 rounded-[3px] bg-[#09111e] text-white">
-                  1
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  2
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto px-3 py-2 rounded-[3px] border border-[#0000004c]"
-                >
-                  Next
-                </Button>
-              </div>
+                {filteredEmergencies.length === 0
+                  ? "0 results"
+                  : `${startIndex}-${endIndex} of ${filteredEmergencies.length}`}
+               </span>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </CardContent>
         </Card>

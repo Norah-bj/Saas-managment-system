@@ -57,11 +57,18 @@ const statsData = [
   },
 ];
 
-const chartData = [
+const emergencyChartData = [
   { name: "Nyagatare", Emergencies: 18 },
   { name: "Huye", Emergencies: 14 },
   { name: "Ruhango", Emergencies: 12 },
   { name: "Muhanga", Emergencies: 10 },
+];
+
+const ancChartData = [
+  { name: "Nyagatare", ANC: 24 },
+  { name: "Huye", ANC: 20 },
+  { name: "Ruhango", ANC: 16 },
+  { name: "Muhanga", ANC: 14 },
 ];
 
 const recentEmergencies = [
@@ -127,6 +134,12 @@ const emergencyAlerts = [
 export const Dashboard = () => {
   const [timeRange, setTimeRange] = useState("all-time");
   const [activityRange, setActivityRange] = useState("all-activity");
+  const [selectedMetric, setSelectedMetric] = useState("emergencies");
+
+  const chartConfig = selectedMetric === "emergencies"
+    ? { data: emergencyChartData, dataKey: "Emergencies", barColor: "#0066FF" }
+    : { data: ancChartData, dataKey: "ANC", barColor: "#09111e" };
+
   return (
     <div className="flex-1 flex flex-col">
       <header className="h-[76px] border-b flex items-center justify-between px-8 bg-white">
@@ -270,22 +283,40 @@ export const Dashboard = () => {
                 </Select>
               </div>
               <div className="mb-4 flex gap-2">
-                <button className="px-3 py-1.5 rounded-full [font-family:'Poppins',Helvetica] font-semibold text-white text-xs bg-[#09111e]">
+                <button
+                  onClick={() => setSelectedMetric("emergencies")}
+                  className={`px-3 py-1.5 rounded-full [font-family:'Poppins',Helvetica] font-semibold text-xs transition ${
+                    selectedMetric === "emergencies"
+                      ? "bg-[#09111e] text-white"
+                      : "text-[#000000] border border-[#0000004c]"
+                  }`}
+                >
                   Emergencies
                 </button>
-                <button className="px-3 py-1.5 rounded-full [font-family:'Poppins',Helvetica] font-semibold text-[#000000] text-xs border border-[#0000004c]">
+                <button
+                  onClick={() => setSelectedMetric("anc")}
+                  className={`px-3 py-1.5 rounded-full [font-family:'Poppins',Helvetica] font-semibold text-xs transition ${
+                    selectedMetric === "anc"
+                      ? "bg-[#09111e] text-white"
+                      : "text-[#000000] border border-[#0000004c]"
+                  }`}
+                >
                   ANC Trends
                 </button>
               </div>
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={chartData}>
+                <BarChart data={chartConfig.data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis
                     dataKey="name"
                     tick={{ fontSize: 12, fill: "#000000a6" }}
                   />
                   <YAxis tick={{ fontSize: 12, fill: "#000000a6" }} />
-                  <Bar dataKey="Emergencies" fill="#0066FF" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey={chartConfig.dataKey}
+                    fill={chartConfig.barColor}
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
